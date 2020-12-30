@@ -11,6 +11,9 @@
     "generate": "nuxt generate"
   },
   "dependencies": {
+    "@dicebear/avatars": "^4.5.2",
+    "@dicebear/avatars-bottts-sprites": "^4.5.2",
+    "@dicebear/avatars-male-sprites": "^4.5.2",
     "@nuxtjs/axios": "^5.0.0",
     "@nuxtjs/style-resources": "^0.1.1",
     "bootstrap-vue": "^2.0.0-rc.1",
