@@ -261,11 +261,17 @@ export default {
       ]
     },
     {
-      name: 'Download App',
-      url: 'http://coreui.io/vue/',
-      icon: 'icon-cloud-download',
+      name: 'White Paper v1.3',
+      url: 'https://docs.google.com/document/d/1aHOIXvijMcsXQYucC1kPTM6x7IfgNIZV7BFITKCaoOw/edit',
+      icon: 'icon-docs',
       class: 'mt-auto',
-      variant: 'success'
+      variant: 'info'
+    },
+    {
+      name: 'Documentation',
+      url: 'http://docs.hypersign.id',
+      icon: 'icon-notebook',
+      variant: 'info'
     },
     {
       name: 'Logout',

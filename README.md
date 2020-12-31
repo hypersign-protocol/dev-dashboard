@@ -4,6 +4,7 @@
 
 This is an Admin Dashboard for Hypersign, The dashboard will be used to generate APi key's and manage subscription [Official Hypersign](https://github.com/hypersign-protocol/).
 
+![Projects Section](https://raw.githubusercontent.com/hypersign-protocol/dashboard/main/static/img/dashboard.png)
 ## Usage
 
 
