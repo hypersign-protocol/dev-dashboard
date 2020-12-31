@@ -6,7 +6,7 @@
     &.bg-#{$color} {
       border-color: darken($value, 12.5%);
       .card-header {
-        background-color: darken($value, 3%);
+        background-color: darken($gray-800, 3%);
         border-color: darken($value, 12.5%);
       }
     }
@@ -70,7 +70,7 @@
 }
 //
 .card-footer {
-
+  color: $white;
   ul {
     display: table;
     width: 100%;
@@ -88,7 +88,7 @@
 
 [class*="card-outline-"] {
   .card-body {
-    background: #fff !important;
+    background: $gray-800;
   }
 
   &.card-outline-top {

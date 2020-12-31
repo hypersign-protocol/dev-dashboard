@@ -3,7 +3,7 @@
 
 $enable-sidebar-nav-rounded:          false !default;
 
-$border-color:                        $gray-200 !default;
+$border-color:                         #424242;
 $layout-transition-speed:             .25s !default;
 
 // Social Colors
@@ -65,8 +65,8 @@ $navbar-brand-minimized-logo-size:    24px !default;
 $navbar-brand-minimized-border:       $navbar-brand-border !default;
 
 $navbar-color:                        $gray-600 !default;
-$navbar-hover-color:                  $gray-800 !default;
-$navbar-active-color:                 $gray-800 !default;
+$navbar-hover-color:                  $gray-200 !default;
+$navbar-active-color:                 $gray-200 !default;
 $navbar-disabled-color:               $gray-300 !default;
 
 $navbar-toggler-icon:                 str-replace(url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='#{$navbar-color}' stroke-width='2.25' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E"), "#", "%23") !default;
@@ -152,7 +152,7 @@ $sidebar-minimizer-hover-indicator:   str-replace(url("data:image/svg+xml;charse
 
 // Top Navigation
 
-$top-nav-bg:                          $body-bg !default;
+$top-nav-bg:                          $gray-800 !default;
 $top-nav-color:                       $body-color !default;
 $top-nav-borders: (
   bottom: (
@@ -187,13 +187,13 @@ $breadcrumb-borders: (
 // Aside
 
 $aside-menu-width:                    250px !default;
-$aside-menu-color:                    $gray-800 !default;
-$aside-menu-bg:                       #fff !default;
+$aside-menu-color:                    $gray-200 !default;
+$aside-menu-bg:                       $gray-800 !default;
 $aside-menu-borders: (
   left: (
     size:                             1px,
     style:                            solid,
-    color:                            $border-color
+    color:                            $white
   )
 ) !default;
 
@@ -203,8 +203,8 @@ $aside-menu-nav-padding-x:            1rem !default;
 // Footer
 
 $footer-height:                       50px !default;
-$footer-bg:  #1e2022;
-$footer-color:                        $body-color !default;
+$footer-bg:                           $gray-800;
+$footer-color:                        $white !default;
 $footer-borders: (
   top: (
     size:                             1px,
@@ -216,4 +216,4 @@ $footer-borders: (
 // Cards
 
 $card-icon-bg:                        transparent !default;
-$card-icon-color:                     $body-color !default;
+$card-icon-color:                     $white !default;

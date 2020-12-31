@@ -2,7 +2,7 @@
   <div class="animated fadeIn">
     <b-row>
       <b-col sm="6" lg="3">
-        <b-card no-body class="bg-primary">
+        <b-card no-body class="">
           <b-card-body class="pb-0">
             <b-dropdown class="float-right" variant="transparent p-0" right>
               <template slot="button-content">
@@ -14,47 +14,13 @@
               <b-dropdown-item disabled>Disabled action</b-dropdown-item>
             </b-dropdown>
             <h4 class="mb-0">9.823</h4>
-            <p>Members online</p>
+            <p>Total users</p>
           </b-card-body>
           <card-line1-chart-example class="chart-wrapper px-3" style="height:70px;" height="70"/>
         </b-card>
       </b-col>
-      <b-col sm="6" lg="3">
-        <b-card no-body class="bg-info">
-          <b-card-body class="pb-0">
-            <b-dropdown class="float-right" variant="transparent p-0" right no-caret>
-              <template slot="button-content">
-                <i class="icon-location-pin"></i>
-              </template>
-              <b-dropdown-item>Action</b-dropdown-item>
-              <b-dropdown-item>Another action</b-dropdown-item>
-              <b-dropdown-item>Something else here...</b-dropdown-item>
-              <b-dropdown-item disabled>Disabled action</b-dropdown-item>
-            </b-dropdown>
-            <h4 class="mb-0">9.823</h4>
-            <p>Members online</p>
-          </b-card-body>
-          <card-line2-chart-example class="chart-wrapper px-3" style="height:70px;" height="70"/>
-        </b-card>
-      </b-col>
-      <b-col sm="6" lg="3">
-        <b-card no-body class="bg-warning">
-          <b-card-body class="pb-0">
-            <b-dropdown class="float-right" variant="transparent p-0" right>
-              <template slot="button-content">
-                <i class="icon-settings"></i>
-              </template>
-              <b-dropdown-item>Action</b-dropdown-item>
-              <b-dropdown-item>Another action</b-dropdown-item>
-              <b-dropdown-item>Something else here...</b-dropdown-item>
-              <b-dropdown-item disabled>Disabled action</b-dropdown-item>
-            </b-dropdown>
-            <h4 class="mb-0">9.823</h4>
-            <p>Members online</p>
-          </b-card-body>
-          <card-line3-chart-example class="chart-wrapper" style="height:70px;" height="70"/>
-        </b-card>
-      </b-col>
+     
+     
       <b-col sm="6" lg="3">
         <b-card no-body class="bg-danger">
           <b-card-body class="pb-0">
@@ -67,8 +33,8 @@
               <b-dropdown-item>Something else here...</b-dropdown-item>
               <b-dropdown-item disabled>Disabled action</b-dropdown-item>
             </b-dropdown>
-            <h4 class="mb-0">9.823</h4>
-            <p>Members online</p>
+            <h4 class="mb-0">1.823</h4>
+            <p>Users online</p>
           </b-card-body>
           <card-bar-chart-example class="chart-wrapper px-3" style="height:70px;" height="70"/>
         </b-card>
@@ -82,7 +48,20 @@
           <div class="small text-muted">November 2017</div>
         </b-col>
         <b-col sm="7" class="d-none d-md-block">
-          <b-button type="button" variant="primary" class="float-right"><i class="icon-cloud-download"></i></b-button>
+          <!-- <b-button type="button" variant="primary" class="float-right"><i class="icon-cloud-download"></i></b-button> -->
+          <b-button-toolbar class="float-right" aria-label="Toolbar with buttons group">
+            <!-- <b-form-radio-group class="mr-3" id="radiosBtn" buttons button-variant="outline-secondary" v-model="selected" name="radiosBtn">
+              <b-form-radio class="mx-0" value="Day">Day</b-form-radio>
+              <b-form-radio class="mx-0" value="Month">Month</b-form-radio>
+              <b-form-radio class="mx-0" value="Year">Year</b-form-radio>
+            </b-form-radio-group> -->
+            <b-form-select>
+              <b-form-select-option>App1</b-form-select-option>
+              <b-form-select-option>App2</b-form-select-option>
+              <b-form-select-option>App3</b-form-select-option>
+              <b-form-select-option>App4</b-form-select-option>
+            </b-form-select>
+          </b-button-toolbar>
           <b-button-toolbar class="float-right" aria-label="Toolbar with buttons group">
             <b-form-radio-group class="mr-3" id="radiosBtn" buttons button-variant="outline-secondary" v-model="selected" name="radiosBtn">
               <b-form-radio class="mx-0" value="Day">Day</b-form-radio>
@@ -126,7 +105,22 @@
 
   </div>
 </template>
+<style scoped>
+/* .card {
+    border-radius: .75rem !important;
+    border: initial;
+    background: #1e2022;
+    border-radius: calc(.15rem - 1px);
+    -webkit-box-shadow: 0 1px 15px rgba(0,0,0,.1), 0 1px 8px rgba(0,0,0,.1);
+    box-shadow: 0 1px 15px rgba(0,0,0,.1), 0 1px 8px rgba(0,0,0,.1);
+    cursor: pointer;
+    color: #d0d0d0!important;
 
+} */
+.text-white {
+    color: #d0d0d0!important;
+}
+</style>
 <script>
 import CardLine1ChartExample from '~/components/dashboard/CardLine1ChartExample'
 import CardLine2ChartExample from '~/components/dashboard/CardLine2ChartExample'

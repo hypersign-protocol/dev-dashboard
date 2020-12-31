@@ -20,3 +20,47 @@
 
 // Custom styles
 @import "custom";
+
+.card {
+    border-radius: .75rem !important;
+    border: initial;
+    background: #1e2022;
+    border-radius: calc(.15rem - 1px);
+    -webkit-box-shadow: 0 1px 15px rgba(0,0,0,.1), 0 1px 8px rgba(0,0,0,.1);
+    box-shadow: 0 1px 15px rgba(0,0,0,.1), 0 1px 8px rgba(0,0,0,.1);
+    cursor: pointer;
+    color: #d0d0d0!important;
+
+}
+
+.bg-primary {
+      background-image:linear-gradient(to right top,#3a7a96,#4386a3,#509ab9);
+      color:$white;
+}
+.modal-content {
+    background-color: #1e2022;
+    color: $white;
+    box-shadow: 0 3px 30px rgba(0,0,0,.1), 0 3px 20px rgba(0,0,0,.1);
+}
+.modal-header {
+        border-bottom: 1px solid #424242;
+}
+.modal-footer {
+        border-top: 1px solid #424242;
+}
+
+.form-control {
+    background: $body-bg ;
+    color: $white;
+}
+
+.form-control:focus {
+    color: $white;
+    background: $body-bg ;
+    border-color: $white;
+    outline: 0;
+    box-shadow: none;
+}
+.modal-header .close {
+    color: $white;
+}

@@ -3,7 +3,7 @@
     <b-row>
       <b-col sm="6" md="4">
         <b-card 
-        class="bg-secondary "
+        class=" selected"
         header="Developers">
           <blockquote class="card-blockquote">
             <p>- 1500 auth request. </p>
@@ -18,7 +18,7 @@
       </b-col>
       
       <b-col sm="6" md="4">
-        <b-card class="bg-secondary " header="Startups & SME's">
+        <b-card class="" header="Startups & SME's">
           <blockquote class="card-blockquote">
             <p>- 30000 auth request. </p>
             <p>- 250 - 300 new users. </p>
@@ -31,7 +31,7 @@
         </b-card>
       </b-col>
       <b-col sm="6" md="4">
-        <b-card class="bg-secondary " header="Enterprise">
+        <b-card class="" header="Enterprise">
           <blockquote class="card-blockquote">
             <p>- unlimited auth request. </p>
             <p>- unlimited new users. </p>

@@ -1,23 +1,88 @@
 <template>
   <div class="animated fadeIn">
+    <b-row style="margin-bottom:10px" >
+      <b-col sm="12"> 
+        <b-button 
+        variant="outline-primary rounded float-right" 
+        @click="infoModal = true"
+        >
+          <i class="fa fa-plus"></i>&nbsp;Create App
+        </b-button>
+      </b-col>
+     
+    </b-row>
     <b-row>
       <b-col sm="3"  v-for="(item,i) in projects" :key=i>
         <b-card
         >
-          <blockquote class="card-blockquote">
-            <p class="text-white">{{item.serviceEndPoint}}</p>
+          <blockquote class="card-blockquote " >
+            <span class="float-right rounded" @click="removeApp(item.appId)">
+              <i class="fa fa-trash-o" >
+
+              </i>
+            </span>
             <p class="text-white"><a href="#">{{item.appId}}</a></p>
             <div v-html="avatar().src" class="user-avatar"/>
             <p class="lead text-white">{{item.appName}}</p>
             <footer>
-              <!-- <cite title="Source Title">Source Title</cite> -->
+              <cite title="Source Title">{{item.serviceEndPoint}}</cite>
             </footer>
           </blockquote>
         </b-card>
       </b-col>
-
+      <b-col sm="12" v-if="projects.length <1">
+        <b-card>
+          Click on Create App to get your API keys
+        </b-card>
+      </b-col>
     </b-row><!--/.row-->
-   
+    <b-modal title="Create App" 
+      size="xl" 
+      class="modal-primary" 
+      v-model="infoModal" 
+      hide-footer
+      no-fade
+    >
+      <b-row class="form-group">
+        <b-col sm="6">
+          <label class="col-form-label" for="inputIsValid">Enter App Name</label>
+          <b-form-input type="text" placeholder="Enter App Name" v-model="appForm.appName"></b-form-input>
+        </b-col>
+        <b-col sm="6">
+          <label class="col-form-label" for="inputIsValid">Service endpoint url</label>
+          <b-form-input type="text" placeholder="Service endpoint url." v-model="appForm.serviceEndPoint"></b-form-input>
+        </b-col>
+      </b-row>
+      
+      <b-row class="form-group">
+        <b-col sm="6">
+          <label class="col-form-label" for="inputIsValid">Any other public info.</label>
+          <b-form-textarea
+            id="textarea"
+            v-model="appForm.otherDetails"
+            placeholder="Any other public info (optional)"
+            rows="3"
+            max-rows="6"
+          >
+          </b-form-textarea>
+        </b-col>
+        <b-col sm="6">
+          <label class="col-form-label" for="inputIsValid">Logo</label>
+          <b-form-group
+          label=""
+          label-for=""
+          :label-cols="0"
+          :horizontal="true">
+            <b-form-file id="fileInput" :plain="true"></b-form-file>
+          </b-form-group>   
+        </b-col>      
+      </b-row>
+      <b-row class="form-group">
+        <b-col sm="6">
+          <b-button class="mt-3" block @click="createApp">Save</b-button>
+        </b-col>    
+      </b-row>
+    </b-modal>
   </div>
 </template>
 <style scoped>
@@ -41,15 +106,7 @@ img {
 .card-header:first-child {
     border-radius: .75rem;
 }
-.card {
-    border-radius: .75rem !important;
-    border: initial;
-    background: #1e2022;
-    border-radius: calc(.15rem - 1px);
-    -webkit-box-shadow: 0 1px 15px rgba(0,0,0,.1), 0 1px 8px rgba(0,0,0,.1);
-    box-shadow: 0 1px 15px rgba(0,0,0,.1), 0 1px 8px rgba(0,0,0,.1);
-    cursor: pointer;
-}
+
 .text-white {
     color: #d0d0d0!important;
 }
@@ -63,43 +120,25 @@ img {
 <script>
 import Avatars from '@dicebear/avatars';
 import sprites from '@dicebear/avatars-bottts-sprites';
-
+import {mapState, mapMutations} from 'vuex'
 export default {
   name: 'cards',
   data () {
       return {
-        projects: [{
-          appId:'hkhkjhkj',
-          appName:'App 1',
+        infoModal: false,
+        appForm:{
+          appId:'',
+          appName:'',
           serviceEndPoint:'http://localhost:8080/',
           logo:'',
-          otherDetails:{}
-        },
-        {
-          appId:'hkhkjhkj',
-          appName:'App 2',
-          serviceEndPoint:'http://localhost:3000/',
-          logo:'',
-          otherDetails:{}
-        },
-        {
-          appId:'hkhkjhkj',
-          appName:'App 3',
-          serviceEndPoint:'http://localhost:9000/',
-          logo:'',
-          otherDetails:{}
-        },
-        {
-          appId:'hkhkjhkj',
-          appName:'App 4',
-          serviceEndPoint:'http://localhost:7000/',
-          logo:'',
-          otherDetails:{}
-        }]
+          otherDetails:''
+        }
       }
   },
   computed : {
-    
+    ...mapState({
+        projects: state => state.projects
+    })
   },
   methods: {
     avatar() {
@@ -108,6 +147,29 @@ export default {
         type: 'avatar',
         src: avatars.create(makeid(6)),
       }
+    },
+    ...mapMutations({
+      addProject: "addProject",
+      removeProject: "removeProject"
+    }),
+    createApp() {
+      let appData = this.appForm
+      appData.appId = 'did:hs:'+makeid(15)
+      this.addProject(appData)
+      this.infoModal= false
+      this.clearform()
+    },
+    removeApp(data) {
+      this.removeProject(data)
+    },
+    clearform() {
+      this.appForm = {
+          appId:'',
+          appName:'',
+          serviceEndPoint:'http://localhost:8080/',
+          logo:'',
+          otherDetails:''
+        }
     }
   }
 }

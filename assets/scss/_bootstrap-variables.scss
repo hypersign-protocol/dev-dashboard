@@ -4,15 +4,15 @@
 // Color system
 //
 
-$white:                           #fff;
+$white:                           #d0d0d0;
 $gray-100:                        #f0f3f5;
-$gray-200:                        #c2cfd6;
+$gray-200:                        #424242;
 $gray-300:                        #a4b7c1;
 $gray-400:                        #869fac;
 $gray-500:                        #678898;
 $gray-600:                        #536c79;
 $gray-700:                        #3e515b;
-$gray-800:                        #29363d;
+$gray-800:                        #1e2022;
 $gray-900:                        #151b1e;
 $black:                           #18191b !default;
 
@@ -28,7 +28,8 @@ $teal:                            #20c997 !default;
 $cyan:                            #63c2de;
 
 $colors: (
-  blue:                           $blue,
+  blue:                           linear-gradient(to right top,#3a7a96,#4386a3,#509ab9),
+
   indigo:                         $indigo,
   purple:                         $purple,
   pink:                           $pink,
@@ -96,13 +97,13 @@ $font-size-base:                  0.875rem;
 
 // Breadcrumbs
 
-$breadcrumb-bg:                   #fff;
+$breadcrumb-bg:                   $body-bg;
 $breadcrumb-margin-bottom:        1.5rem;
 
 // Cards
 
 $card-border-color:               $gray-200;
-$card-cap-bg:                     $gray-100;
+$card-cap-bg:                     $gray-800;
 
 // Dropdowns
 

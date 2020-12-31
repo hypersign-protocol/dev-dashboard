@@ -16,14 +16,14 @@
     border: 0;
 
     &:hover, &.active {
-      color: $body-color;
+      color: $white;
       background: transparent;
     }
   }
 
   .open {
     .btn {
-      color: $body-color;
+      color: $white;
       background: transparent;
     }
   }
