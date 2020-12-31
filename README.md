@@ -8,6 +8,8 @@ This is an Admin Dashboard for Hypersign, The dashboard will be used to generate
 
 
 # install dependencies
+
+```
 $ npm install # Or yarn install
 ```
 
