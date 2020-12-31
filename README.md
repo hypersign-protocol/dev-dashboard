@@ -1,16 +1,11 @@
-![Nuxt CoreUI Project](nuxtcoreui.jpg)
+![Hypersign Dashboard](https://cdn.shortpixel.ai/client/to_avif,q_lossless,ret_img/https://hypersign.id/wp-content/uploads/2020/01/Banner_logo2.png)
 
-# NuxtJS + CoreUI
+# Hypersign Admin dashboard
 
-Unofficial Nuxt + CoreUI project, free to use boilerplate for every need. For more information about Vue CoreUI you can see at [Official Vue CoreUI](https://github.com/mrholek/CoreUI-Vue).
+This is an Admin Dashboard for Hypersign, The dashboard will be used to generate APi key's and manage subscription [Official Hypersign](https://github.com/hypersign-protocol/).
 
 ## Usage
 
-If you want to use this boilerplate, make sure you already installed [NodeJS](https://nodejs.org/en/) and [Vue CLI](https://www.npmjs.com/package/vue-cli) on your local machine. And then, you can use below command to download this boilerplate.
-
-``` bash
-$ vue init muhibbudins/nuxt-coreui my-project  
-$ cd my-project
 
 # install dependencies
 $ npm install # Or yarn install
@@ -35,15 +30,6 @@ $ npm run build
 $ npm start
 ```
 
-## Todo
-
-- [x] Fix link and views
-- [x] Updgrade to latest NuxtJS boilerplate
-- [x] Using Express as server
-- [x] Move installation to Vue CLI
-- [x] Extend SCSS to Style Resources
-- [x] Improve performance and code style
-
 ## License
-
+We have used Nuxt+ Core ui boiler plate and hence the licience falls under the same.
 This project under [NuxtJS License](https://github.com/nuxt/nuxt.js/blob/dev/LICENSE) and [CoreUI License](https://github.com/coreui/coreui-free-vue-admin-template/blob/master/LICENSE)
