@@ -1,4 +1,37 @@
 <style scoped>
+.btn:focus, .btn.focus {
+  box-shadow: none !important;
+}
+.toggle {
+  margin: 1em;
+}
+.slidein {
+  min-width: 600px;
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  right: 0;
+  background:white;
+  height: 100%;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
+  transition: all 0.5s ease-in-out;
+}
+
+/* before the element is shown, start off the screen to the right */
+.slide-enter, .slide-leave-active {
+  right: -100%;
+}
+
+.close-btn {
+  border: none;
+  font-weight: bold;
+  font-size: 2em;
+  background: transparent;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.5em;
+}
 .addmargin {
   margin-top: 10px;
   margin-bottom: 10px;
@@ -55,151 +88,155 @@
 <template>
   <div class="home marginLeft marginRight">
     <div class="row">
+      <div class="col-md-12" style="text-align: left; min-height: 100%;">
       <loading :active.sync="isLoading" :can-cancel="true" :is-full-page="fullPage"></loading>
-      <div class="col-md-12" style="text-align: left">
         <Info :message="description"/>
-        <div class="card">
+        <div>
+          <button class="btn btn-outline-primary btn-sm" style="float:right" @click="toggle">Create App</button>
+        </div>
+      </div>
+    </div>
+    <transition name="slide">
+      <div class="slidein" v-if="open">
+        <div class="card" style="text-align:left; min-height:100%">
           <div class="card-header">
+            <b-button variant="link" style="float:left" @click="toggle">X</b-button>
             <b-button v-b-toggle.collapse-1 variant="link">Create an app</b-button>
           </div>
-          <b-collapse id="collapse-1" class="mt-2">
-            <div class="card-body">
-              
-              <div class="row">
-                <div class="col-md-6">
-                    <div class="separator">BASIC CONFIGURATION</div>
+          <div class="card-body">
+            <div class="row form-group">
+              <div class="col-md-4">
+                    <label>App Name:</label>
+              </div>
+              <div class="col-md-8">
+                <input
+                  type="text"
+                  v-model="appName"
+                  size="35"
+                  placeholder="Enter app name"
+                  class="form-control"
+                />              
+              </div>
+            </div>
+            <div class="row form-group">
+              <div class="col-md-4">
+                    <label>Service Endpoint:</label>
+              </div>
+              <div class="col-md-8">
+                <input
+                  type="text"
+                  v-model="appUrl"
+                  size="35"
+                  placeholder="Enter service endpoint"
+                  class="form-control"
+                />          
+              </div>
+            </div>
+            <div class="row form-group">
+              <div class="col-md-4">
+                    <label>Logo url:</label>
+              </div>
+              <div class="col-md-8">
+                <input
+                  type="text"
+                  v-model="appUrl"
+                  size="35"
+                  placeholder="Enter logo url"
+                  class="form-control"
+                />          
+              </div>
+            </div>
+            <div class="row form-group">
+              <div class="col-md-12" style="border-radius:inherit;text-align:left;border-style:hidden">
+                <div class="">
+                <b-button style="padding-left: 0px;" v-b-toggle.collapse-2 variant="link">ADVANCE CONFIGURATION (OPTIONAL)</b-button>         
                 </div>
-                <div class="col-md-6">
-                    <div class="separator">ADVANCE CONFIGURATION (OPTIONAL)</div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-group form-inline">
-                    <label style="margin-right: 10%">App Name:</label>
-                    <input
-                      type="text"
-                      v-model="basic.name"
-                      size="35"
-                      placeholder="Demo Application"
-                      class="form-control"
-                      required
-                    />
-                  </div>
-                  <div class="form-group form-inline">
-                    <label style="margin-right: 3%">Service Endpoint:</label>
-                    <input
-                      type="text"
-                      v-model="basic.serviceEndpoint"
-                      size="35"
-                      placeholder="https://demoapp.com"
-                      class="form-control"
-                      required
-                    />
-                  </div>
-                  <div class="form-group form-inline">
-                    <label style="margin-right: 9%">Description:</label>
-                    <textarea
-                      v-model="basic.description"
-                      rows="5"
-                      cols="34"
-                      placeholder="Description of this application"
-                      class="form-control"
-                    ></textarea>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-group form-inline">
-                    <label style="margin-right: 12%">Schema:</label>
-                    <b-form-select
+                <b-collapse id="collapse-2">
+                  <div class="card-body">
+                    <div class="row form-group">
+                    <div class="col-md-4">
+                          <label style="">Schema:</label>
+                    </div>
+                    <div class="col-md-8">
+                      <b-form-select
                         v-model="selected"
                         :options="selectOptions"
                         size="md"
                         class="mt-3"
-                      ></b-form-select>
+                      ></b-form-select>          
+                    </div>
+                    </div>
+                    <div class="separator form-group">E-mail configuration</div>
+                    <div class="row form-group">
+                      <div class="col-md-4">
+                            <label >Host:</label>
+                      </div>
+                      <div class="col-md-8">
+                        <input
+                          type="text"
+                          v-model="mailHost"
+                          size="35"
+                          placeholder="Enter host name"
+                          class="form-control"
+                        />  
+                      </div>
+                    </div>
+                    <div class="row form-group">
+                      <div class="col-md-4">
+                            <label >Port:</label>
+                      </div>
+                      <div class="col-md-8">
+                        <input
+                          type="text"
+                          v-model="mailPort"
+                          size="35"
+                          placeholder="Enter mail port"
+                          class="form-control"
+                        />     
+                      </div>
+                    </div>
+                    <div class="row form-group">
+                      <div class="col-md-4">
+                            <label >User:</label>
+                      </div>
+                      <div class="col-md-8">
+                        <input
+                          type="text"
+                          v-model="mailUser"
+                          size="35"
+                          placeholder="Enter mail user"
+                          class="form-control"
+                        />     
+                      </div>
+                    </div>
+                    <div class="row form-group">
+                      <div class="col-md-4">
+                            <label >Password:</label>
+                      </div>
+                      <div class="col-md-8">
+                        <input
+                          type="password"
+                          v-model="mailUser"
+                          size="35"
+                          placeholder="Enter mail password"
+                          class="form-control"
+                        />     
+                      </div>
+                    </div>
                   </div>
-                  <div class="separator">E-mail configuration</div>
-                  <div class="form-group form-inline">
-                    <label style="margin-right: 17%">Host:</label>
-                    <input
-                      type="text"
-                      v-model="advance.mail.host"
-                      size="35"
-                      placeholder="smtp.gmail.com"
-                      class="form-control"
-                    />
-                  </div>
-                  <div class="form-group form-inline">
-                    <label style="margin-right: 17%">Port:</label>
-                    <input
-                      type="number"
-                      v-model="advance.mail.port"
-                      size="35"
-                      placeholder="465"
-                      class="form-control"
-                    />
-                  </div>
-
-                  <div class="form-group form-inline">
-                    <label style="margin-right: 17%">User:</label>
-                    <input
-                      type="text"
-                      v-model="advance.mail.user"
-                      size="35"
-                      placeholder="Enter mail user"
-                      class="form-control"
-                    />
-                  </div>
-
-                  <div class="form-group form-inline">
-                    <label style="margin-right: 12%">Password:</label>
-                    <input
-                      type="password"
-                      v-model="advance.mail.pass"
-                      size="35"
-                      placeholder="*****"
-                      class="form-control"
-                    />
-                  </div>
-                </div>
-
-                <div class="col-md-12">
-                  <hr />
-                  <button class="btn btn-outline-primary btn-sm" @click="createApp()">Create</button>
-                </div>
+                </b-collapse>
               </div>
             </div>
-          </b-collapse>
+           
+            <div class="row form-group">
+               <div class="col-md-12">
+                  <button class="btn btn-outline-primary btn-sm" @click="createApp()">Create</button>
+                </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="row" style="margin-top: 2%;">
-      <div class="col-md-12">
-        <table class="table table-bordered" style="background:#FFFF">
-          <thead class="thead-light">
-            <tr>
-              <th>id</th>
-              <th>schemaId</th>
-              <th>issuer</th>
-              <th>subject</th>
-              <th>dataHash</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="row in vcList" :key="row">
-              <th scope="row">
-                <div class="custom-control custom-checkbox">
-                  <input type="checkbox" class="custom-control-input" :id="row.id" />
-                  <label class="custom-control-label" :for="row.id">{{row.id}}</label>
-                </div>
-              </th>
-              <td>{{row.schemaId}}</td>
-              <td>{{row.issuer}}</td>
-              <td>{{row.subject}}</td>
-              <td>{{row.dataHash}}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    </transition>
   </div>
 </template>
 
@@ -214,6 +251,7 @@ export default {
     return {
       description: "An issuer can issue a credential to a subject (or holder) which can be verfied by the verifier independently, without having him to connect with the issuer. They are a part of our daily lives; driver's licenses are used to assert that we are capable of operating a motor vehicle, university degrees can be used to assert our level of education, and government-issued passports enable us to travel between countries.  For example: an airline company can issue a flight ticket (\"verfiable credential\") using schema (issued by DGCA) to the passenger.",
       active: 0,
+      open: false,
       host: location.hostname,
       user: {},
       prevRoute: null,
@@ -270,6 +308,9 @@ export default {
     });
   },
   methods: {
+    toggle() {
+      this.open = !this.open;
+    },
     notifySuccess(msg){
       this.$notify({
           group: 'foo',
