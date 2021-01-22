@@ -1,15 +1,11 @@
-import IUser from '../models/IUser';
-import IApplication from '../models/IApplication';
-// import { keys } from 'ts-transformer-keys';
 import { db, logger } from '../config'
 
 const FieldMap = Object.freeze({
     User: ["id","fname","lname","phoneNumber","username","password","email","publicKey","privateKey","hash","birthdate","jobTitle", "isActive"],
-    Application: ["id","appId","appSecret","isActive", "name", "userId"],
+    Application: ["id","name","did","owner", "schemaId", "serviceEp"],
     VerifiableCredential: ["id",    "subject",    "issuer",    "schemaId",    "dataHash"],
 })
 
-    
 export enum SchemaType {
     User,
     Application,

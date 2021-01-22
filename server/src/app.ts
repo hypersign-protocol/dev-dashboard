@@ -1,16 +1,18 @@
-import express, { Application, Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import { port, logger } from './config';
 import { User } from './services/user.service';
+import { Application } from './services/application.service';
 import path from 'path';
 import http from 'http';
+import fetch from 'node-fetch';
 
 import  HypersignAuth from 'hypersign-auth-js-sdk'
 
 export default function app() {
-    const app: Application = express();
+    const app = express();
     const server =  http.createServer(app);
     const options = {
         jwtSecret: 'SecureDSecret#12@',
@@ -20,7 +22,7 @@ export default function app() {
     
     const hypersign = new HypersignAuth({
         server, 
-        baseUrl: 'http://192.168.43.225:4006',
+        baseUrl: 'http://192.168.43.43:4006',
         options
     });
 
@@ -69,16 +71,8 @@ export default function app() {
                // Otherwise, do not do anything.
                 console.log(`User ${user.email} already exists.`)
            }
-           
-           
-
             res.status(200).send({ status: 200, message: "Success", error: null });
    
-            
-            
-            
-            
-            
         } catch (e) {
 
             console.log(e)
@@ -88,6 +82,7 @@ export default function app() {
 
     // use this api for verification of authorization token
     // this api gets called before each route in frontend
+    // hypersign.authorize.bind(hypersign), 
     app.post('/protected', hypersign.authorize.bind(hypersign), (req, res) => {
         try {
             const user = req.body.userData;
@@ -95,6 +90,68 @@ export default function app() {
             // Do whatever you want to do with it
             // Send a message or send to home page
             res.status(200).send({ status: 200, message: user, error: null });
+        } catch (e) {
+            res.status(500).send({ status: 500, message: null, error: e.message });
+        }
+    });
+
+    app.post('/hs/api/v2/app/create', hypersign.authorize.bind(hypersign), async (req, res) => {
+        try {
+            const {userData} = req.body;
+            
+            const appBasicConfig = req.body.basic;
+            const appAdvConfig = req.body.advance;
+            const hypersignJSON = {
+                keys: {},
+                app: {
+                    did: "",
+                    name: "",
+                    description: "",
+                    serviceEndpoint: "",
+                    owner: ""
+                },
+                schemaId: "",
+                network: "",
+                mail: {
+                    host: "",
+                    port: 0,
+                    user: "",
+                    pass: "",
+                    name: ""
+                }
+            }
+
+            Object.assign(hypersignJSON , appAdvConfig);
+            Object.assign(hypersignJSON.app, appBasicConfig);
+            hypersignJSON.app.owner = userData.id;
+            console.log(hypersignJSON)
+
+            // step1: Make a call to core to generate keypair and register did
+            const url = `https://ssi.hypermine.in/core/api/did/register?user=${JSON.stringify(hypersignJSON.app)}`;
+            console.log(url)
+            const resp =  await fetch(url)
+            const json =  await resp.json();
+            console.log(json.message.did)
+            Object.assign(hypersignJSON.keys, json.message.keys);
+            hypersignJSON.app.did = json.message.did;
+            
+            
+            // step2: Store app realated configuration in db
+            const app = new Application({
+                name: hypersignJSON.app.name,
+                did: hypersignJSON.app.did,
+                owner: hypersignJSON.app.owner,
+                schemaId: hypersignJSON.schemaId,
+                serviceEp: hypersignJSON.app.serviceEndpoint
+            });
+            await app.create();
+
+            const appList = await app.fetch();
+
+            console.log(appList)
+
+            // step3: Generate hypersign.json data and return
+            res.status(200).send({ status: 200, message: {hypersignJSON, appList}, error: null });
         } catch (e) {
             res.status(500).send({ status: 500, message: null, error: e.message });
         }
