@@ -2,7 +2,6 @@
 
 ```
 npm i
-npm run newdb
 npm run build && npm run start
 ```
 

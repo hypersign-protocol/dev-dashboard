@@ -32,6 +32,25 @@
   border-radius: 10px;
 }
 
+
+.separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: rgb(147, 147, 158);
+}
+.separator::before, .separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgb(211, 206, 206);
+}
+.separator::before {
+    margin-right: .25em;
+}
+.separator::after {
+    margin-left: .25em;
+}
+
 </style>
 <template>
   <div class="home marginLeft marginRight">
@@ -44,48 +63,108 @@
         <Info :message="description"/>
         <div class="card">
           <div class="card-header">
-            <b-button v-b-toggle.collapse-1 variant="link">Issue Credential</b-button>
+            <b-button v-b-toggle.collapse-1 variant="link">Create an app</b-button>
           </div>
           <b-collapse id="collapse-1" class="mt-2">
             <div class="card-body">
+              
               <div class="row">
                 <div class="col-md-6">
-                  <form style="max-height:300px; overflow:auto; padding: 5px">
-                    <div class="form-group">
-                      <input type="text" class="form-control" placeholder="Issued To (did:hs:...)" v-model="holderDid"/>
-                    </div>
-                    <div class="form-group">
-                      <b-form-select
+                    <div class="separator">BASIC CONFIGURATION</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="separator">ADVANCE CONFIGURATION (OPTIONAL)</div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group form-inline">
+                    <label style="margin-right: 10%">App Name:</label>
+                    <input
+                      type="text"
+                      v-model="appName"
+                      size="35"
+                      placeholder="Enter app name"
+                      class="form-control"
+                    />
+                  </div>
+                  <div class="form-group form-inline">
+                    <label style="margin-right: 3%">Service Endpoint:</label>
+                    <input
+                      type="text"
+                      v-model="appUrl"
+                      size="35"
+                      placeholder="Enter service endpoint"
+                      class="form-control"
+                    />
+                  </div>
+                  <div class="form-group form-inline">
+                    <label style="margin-right: 9%">Description:</label>
+                    <textarea
+                      v-model="appDescription"
+                      rows="5"
+                      cols="34"
+                      placeholder="Enter description"
+                      class="form-control"
+                    ></textarea>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group form-inline">
+                    <label style="margin-right: 12%">Schema:</label>
+                    <b-form-select
                         v-model="selected"
                         :options="selectOptions"
-                        @change="OnSchemaSelectDropDownChange($event)"
                         size="md"
                         class="mt-3"
                       ></b-form-select>
-                    </div>
-                    <div class="form-group" v-for="attr in issueCredAttributes" :key="attr.name">
-                      <label>{{attr.name}}</label>
-                      <input
-                        text
-                        v-model="attr.value"
-                        class="form-control"
-                        placeholder="Enter attribute value"
-                      />
-                    </div>
-                  </form>
-                  <hr />
-                  <button class="btn btn-outline-primary btn-sm" @click="issueCredential()">Issue</button>
+                  </div>
+                  <div class="separator">E-mail configuration</div>
+                  <div class="form-group form-inline">
+                    <label style="margin-right: 17%">Host:</label>
+                    <input
+                      type="text"
+                      v-model="mailHost"
+                      size="35"
+                      placeholder="Enter host name"
+                      class="form-control"
+                    />
+                  </div>
+                  <div class="form-group form-inline">
+                    <label style="margin-right: 17%">Port:</label>
+                    <input
+                      type="text"
+                      v-model="mailPort"
+                      size="35"
+                      placeholder="Enter mail port"
+                      class="form-control"
+                    />
+                  </div>
+
+                  <div class="form-group form-inline">
+                    <label style="margin-right: 17%">User:</label>
+                    <input
+                      type="text"
+                      v-model="mailUser"
+                      size="35"
+                      placeholder="Enter mail user"
+                      class="form-control"
+                    />
+                  </div>
+
+                  <div class="form-group form-inline">
+                    <label style="margin-right: 12%">Password:</label>
+                    <input
+                      type="password"
+                      v-model="mailPassword"
+                      size="35"
+                      placeholder="Enter mail password"
+                      class="form-control"
+                    />
+                  </div>
                 </div>
-                <div class="col-md-6" style="padding: 30px" v-if="isCredentialIssued">
-                  <div class="form-group" style="text-align:center">
-                    <qrcode-vue :value="signedVerifiableCredential" :size="200" level="H"></qrcode-vue>
-                    <label class="title">Scan the QR code using Hypersign Wallet!</label>
-                  </div>
-                  <div class="form-group" style="text-align:center">
-                    <p></p>
-                    <h5>OR</h5>
-                    <button class="btn btn-link" @click="downloadCredentials()">Download Credential</button>
-                  </div>
+
+                <div class="col-md-12">
+                  <hr />
+                  <button class="btn btn-outline-primary btn-sm" @click="createApp()">Create</button>
                 </div>
               </div>
             </div>
@@ -157,7 +236,7 @@ export default {
       selected: null,
       attributeValues: {},
       authToken: localStorage.getItem("authToken"),
-      selectOptions: [{ value: null, text: "Please select a schema" }],
+      selectOptions: [{ value: null, text: "Select a schema" }],
       schemaMap: {},
       vcList : [],
       schemaList: [],
