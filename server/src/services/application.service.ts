@@ -25,8 +25,8 @@ export class Application implements IApplication{
     }
 
     async create(){
-        await this.dbSerice.add(SchemaType.Application, this);
-        return true;
+        const app = await this.dbSerice.add(SchemaType.Application, this);
+        return app;
     }
 
     async fetch(obj = {}){    

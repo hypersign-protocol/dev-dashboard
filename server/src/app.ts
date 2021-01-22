@@ -95,6 +95,18 @@ export default function app() {
         }
     });
 
+    app.get('/hs/api/v2/app', hypersign.authorize.bind(hypersign), async (req, res) => {
+        try{
+            const {userData} = req.body;
+            const app = new Application({});
+            const appList = await app.fetch({
+                owner: userData.id
+            });
+            res.status(200).send({ status: 200, message: appList, error: null });
+        }catch(e){
+            res.status(500).send({ status: 500, message: null, error: e.message });
+        }
+    })
     app.post('/hs/api/v2/app/create', hypersign.authorize.bind(hypersign), async (req, res) => {
         try {
             const {userData} = req.body;
@@ -144,14 +156,12 @@ export default function app() {
                 schemaId: hypersignJSON.schemaId,
                 serviceEp: hypersignJSON.app.serviceEndpoint
             });
-            await app.create();
+            const newApp = await app.create();
 
-            const appList = await app.fetch();
-
-            console.log(appList)
+            
 
             // step3: Generate hypersign.json data and return
-            res.status(200).send({ status: 200, message: {hypersignJSON, appList}, error: null });
+            res.status(200).send({ status: 200, message: {hypersignJSON, newApp}, error: null });
         } catch (e) {
             res.status(500).send({ status: 500, message: null, error: e.message });
         }

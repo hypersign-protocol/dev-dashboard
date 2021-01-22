@@ -111,7 +111,7 @@
               <div class="col-md-8">
                 <input
                   type="text"
-                  v-model="appName"
+                  v-model="basic.name"
                   size="35"
                   placeholder="Enter app name"
                   class="form-control"
@@ -125,7 +125,7 @@
               <div class="col-md-8">
                 <input
                   type="text"
-                  v-model="appUrl"
+                  v-model="basic.serviceEndpoint"
                   size="35"
                   placeholder="Enter service endpoint"
                   class="form-control"
@@ -139,7 +139,7 @@
               <div class="col-md-8">
                 <input
                   type="text"
-                  v-model="appUrl"
+                  v-model="basic.logoUrl"
                   size="35"
                   placeholder="Enter logo url"
                   class="form-control"
@@ -174,7 +174,7 @@
                       <div class="col-md-8">
                         <input
                           type="text"
-                          v-model="mailHost"
+                          v-model="advance.mail.host"
                           size="35"
                           placeholder="Enter host name"
                           class="form-control"
@@ -188,7 +188,7 @@
                       <div class="col-md-8">
                         <input
                           type="text"
-                          v-model="mailPort"
+                          v-model="advance.mail.port"
                           size="35"
                           placeholder="Enter mail port"
                           class="form-control"
@@ -202,7 +202,7 @@
                       <div class="col-md-8">
                         <input
                           type="text"
-                          v-model="mailUser"
+                          v-model="advance.mail.user"
                           size="35"
                           placeholder="Enter mail user"
                           class="form-control"
@@ -216,7 +216,7 @@
                       <div class="col-md-8">
                         <input
                           type="password"
-                          v-model="mailUser"
+                          v-model="advance.mail.pass"
                           size="35"
                           placeholder="Enter mail password"
                           class="form-control"
@@ -273,7 +273,7 @@ export default {
       authToken: localStorage.getItem("authToken"),
       selectOptions: [{ value: null, text: "Select a schema" }],
       schemaMap: {},
-      vcList : [],
+      appList : [],
       schemaList: [],
       fullPage: true,
       isLoading: false,
@@ -282,7 +282,8 @@ export default {
         name: "",
         description: "",
         serviceEndpoint: "",
-        did:""
+        did:"",
+        logoUrl:""
       },
       advance: {
         schemaId: "",
@@ -300,7 +301,7 @@ export default {
     const usrStr = localStorage.getItem("user");
     this.user = JSON.parse(usrStr);
     this.getList('SCHEMA')
-    // this.getList('CREDENTIAL')
+    this.getList('CREDENTIAL')
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -336,10 +337,10 @@ export default {
           method: "GET"
         }
       }else{
-        url = `${this.$config.studioServer.BASE_URL}${this.$config.studioServer.CRED_LIST_EP}`;
+        url = `${this.$config.studioServer.BASE_URL}hs/api/v2/app`;
         options  = {
           method: "GET",
-          headers: {'x-auth-token': this.authToken}
+          headers: { "Authorization": `Bearer ${this.authToken}` }
         }
       }
       
@@ -361,7 +362,8 @@ export default {
           });
         }
       }else{
-        this.vcList = j.message.list;
+        this.appList = j.message;
+        console.log(this.appList)
       }
     },
     forceFileDownload(data, fileName) {
@@ -407,16 +409,13 @@ export default {
           Object.assign(this.hypersignJson.mail, this.advance.mail)          
           console.log(this.hypersignJson);
           this.hypersignJson.mail.name = this.hypersignJson.app.appName;
-          
-          
           this.downloadCredentials();
-          
-          this.notifySuccess("App is created");
+          this.appList.push(json.message.newApp)
 
-          // this.basic = {}
-          // this.advance = {}
+          this.notifySuccess("App is created");
           this.isLoading = false;
           
+          // TODO clear all fields.
         }else{
           this.isLoading = false
           throw new Error(`Error: ${json.error}`);
