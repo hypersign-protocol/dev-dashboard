@@ -23,8 +23,11 @@
     "flag-icon-css": "^2.9.0",
     "font-awesome": "^4.7.0",
     "nuxt": "^2.0.0",
+    "qrcode.vue": "^3.0.0",
     "simple-line-icons": "^2.4.1",
-    "vue-chartjs": "^3.1.1"
+    "url": "^0.11.0",
+    "vue-chartjs": "^3.1.1",
+    "vue-qr": "^2.3.0"
   },
   "devDependencies": {
     "node-sass": "^4.7.2",

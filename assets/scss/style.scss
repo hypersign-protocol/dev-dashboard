@@ -22,10 +22,10 @@
 @import "custom";
 
 .card {
-    border-radius: .75rem !important;
+    border-radius: .75rem  !important;
     border: initial;
     background: #1e2022;
-    border-radius: calc(.15rem - 1px);
+    // border-radius: calc(.15rem - 1px);
     -webkit-box-shadow: 0 1px 15px rgba(0,0,0,.1), 0 1px 8px rgba(0,0,0,.1);
     box-shadow: 0 1px 15px rgba(0,0,0,.1), 0 1px 8px rgba(0,0,0,.1);
     cursor: pointer;

@@ -58,7 +58,7 @@ module.exports = {
   ** Plugins to load before mounting the App
   */
   plugins: [
-    
+    { src: '@/plugins/vue-qr.js', ssr: false }
   ],
 
   /*
@@ -112,6 +112,18 @@ module.exports = {
 
         config.module.rules.forEach(rule => changeLoaderOptions(rule.use))
       }
+    }
+  },
+
+  /**
+   *  ENV variables
+   */
+  env: {
+    studioServer: {
+      // BASE_URL: "https://ssi.hypermine.in/demows/",
+      BASE_URL: "http://localhost:9000",
+      AUTH_CHALLENGE_EP: "api/auth/newchallenge",
+      AUTH_LOGIN_EP: "api/auth/login"
     }
   }
 }
