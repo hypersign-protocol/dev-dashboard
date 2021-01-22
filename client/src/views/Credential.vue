@@ -354,22 +354,30 @@ export default {
         const resp = await fetch(createAppUrl, {
           method: 'POST',
           body: JSON.stringify(data),
-          headers: { "Content-Type": "application/json" }
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.authToken}`
+           }
         });
         const json =  await resp.json();
         if (json.status === 200) {
           console.log(json.message)
-          Object.assign(this.hypersignJson,json.message)
+          Object.assign(this.hypersignJson, json.message.hypersignJSON)
           Object.assign(this.hypersignJson.mail, this.advance.mail)          
           console.log(this.hypersignJson);
           this.hypersignJson.mail.name = this.hypersignJson.app.appName;
           
           
           this.downloadCredentials();
-          this.isLoading = false;
+          
           this.notifySuccess("App is created");
+
+          // this.basic = {}
+          // this.advance = {}
+          this.isLoading = false;
           
         }else{
+          this.isLoading = false
           throw new Error(`Error: ${json.error}`);
         }
         }, 2000)

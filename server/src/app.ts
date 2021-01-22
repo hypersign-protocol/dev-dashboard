@@ -1,9 +1,10 @@
-import express, { Application, Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import { port, logger } from './config';
 import { User } from './services/user.service';
+import { Application } from './services/application.service';
 import path from 'path';
 import http from 'http';
 import fetch from 'node-fetch';
@@ -11,7 +12,7 @@ import fetch from 'node-fetch';
 import  HypersignAuth from 'hypersign-auth-js-sdk'
 
 export default function app() {
-    const app: Application = express();
+    const app = express();
     const server =  http.createServer(app);
     const options = {
         jwtSecret: 'SecureDSecret#12@',
@@ -94,9 +95,10 @@ export default function app() {
         }
     });
 
-    app.post('/hs/api/v2/app/create', async (req, res) => {
+    app.post('/hs/api/v2/app/create', hypersign.authorize.bind(hypersign), async (req, res) => {
         try {
-            // const user = req.body.userData;
+            const {userData} = req.body;
+            
             const appBasicConfig = req.body.basic;
             const appAdvConfig = req.body.advance;
             const hypersignJSON = {
@@ -105,7 +107,8 @@ export default function app() {
                     did: "",
                     name: "",
                     description: "",
-                    serviceEndpoint: ""
+                    serviceEndpoint: "",
+                    owner: ""
                 },
                 schemaId: "",
                 network: "",
@@ -120,20 +123,35 @@ export default function app() {
 
             Object.assign(hypersignJSON , appAdvConfig);
             Object.assign(hypersignJSON.app, appBasicConfig);
-
+            hypersignJSON.app.owner = userData.id;
             console.log(hypersignJSON)
-            // step1: Make a call to core to generate keypair and register did
 
+            // step1: Make a call to core to generate keypair and register did
             const url = `https://ssi.hypermine.in/core/api/did/register?user=${JSON.stringify(hypersignJSON.app)}`;
             console.log(url)
             const resp =  await fetch(url)
             const json =  await resp.json();
             console.log(json.message.did)
             Object.assign(hypersignJSON.keys, json.message.keys);
-            hypersignJSON.app.did = json.message.did
+            hypersignJSON.app.did = json.message.did;
+            
+            
             // step2: Store app realated configuration in db
+            const app = new Application({
+                name: hypersignJSON.app.name,
+                did: hypersignJSON.app.did,
+                owner: hypersignJSON.app.owner,
+                schemaId: hypersignJSON.schemaId,
+                serviceEp: hypersignJSON.app.serviceEndpoint
+            });
+            await app.create();
+
+            const appList = await app.fetch();
+
+            console.log(appList)
+
             // step3: Generate hypersign.json data and return
-            res.status(200).send({ status: 200, message: hypersignJSON, error: null });
+            res.status(200).send({ status: 200, message: {hypersignJSON, appList}, error: null });
         } catch (e) {
             res.status(500).send({ status: 500, message: null, error: e.message });
         }
