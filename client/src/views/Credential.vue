@@ -54,11 +54,8 @@
 </style>
 <template>
   <div class="home marginLeft marginRight">
-    <loading :active.sync="isLoading" 
-        :can-cancel="true"        
-        :is-full-page="fullPage"></loading>
-
     <div class="row">
+      <loading :active.sync="isLoading" :can-cancel="true" :is-full-page="fullPage"></loading>
       <div class="col-md-12" style="text-align: left">
         <Info :message="description"/>
         <div class="card">
@@ -80,29 +77,31 @@
                     <label style="margin-right: 10%">App Name:</label>
                     <input
                       type="text"
-                      v-model="appName"
+                      v-model="basic.name"
                       size="35"
-                      placeholder="Enter app name"
+                      placeholder="Demo Application"
                       class="form-control"
+                      required
                     />
                   </div>
                   <div class="form-group form-inline">
                     <label style="margin-right: 3%">Service Endpoint:</label>
                     <input
                       type="text"
-                      v-model="appUrl"
+                      v-model="basic.serviceEndpoint"
                       size="35"
-                      placeholder="Enter service endpoint"
+                      placeholder="https://demoapp.com"
                       class="form-control"
+                      required
                     />
                   </div>
                   <div class="form-group form-inline">
                     <label style="margin-right: 9%">Description:</label>
                     <textarea
-                      v-model="appDescription"
+                      v-model="basic.description"
                       rows="5"
                       cols="34"
-                      placeholder="Enter description"
+                      placeholder="Description of this application"
                       class="form-control"
                     ></textarea>
                   </div>
@@ -122,19 +121,19 @@
                     <label style="margin-right: 17%">Host:</label>
                     <input
                       type="text"
-                      v-model="mailHost"
+                      v-model="advance.mail.host"
                       size="35"
-                      placeholder="Enter host name"
+                      placeholder="smtp.gmail.com"
                       class="form-control"
                     />
                   </div>
                   <div class="form-group form-inline">
                     <label style="margin-right: 17%">Port:</label>
                     <input
-                      type="text"
-                      v-model="mailPort"
+                      type="number"
+                      v-model="advance.mail.port"
                       size="35"
-                      placeholder="Enter mail port"
+                      placeholder="465"
                       class="form-control"
                     />
                   </div>
@@ -143,7 +142,7 @@
                     <label style="margin-right: 17%">User:</label>
                     <input
                       type="text"
-                      v-model="mailUser"
+                      v-model="advance.mail.user"
                       size="35"
                       placeholder="Enter mail user"
                       class="form-control"
@@ -154,9 +153,9 @@
                     <label style="margin-right: 12%">Password:</label>
                     <input
                       type="password"
-                      v-model="mailPassword"
+                      v-model="advance.mail.pass"
                       size="35"
-                      placeholder="Enter mail password"
+                      placeholder="*****"
                       class="form-control"
                     />
                   </div>
@@ -206,13 +205,11 @@
 
 <script>
 import fetch from "node-fetch";
-import conf from '../config';
-const { hypersignSDK } = conf;
-import QrcodeVue from "qrcode.vue";
-import Info from '@/components/Info.vue'
+import Info from '@/components/Info.vue';
+import Loading from "vue-loading-overlay";
 export default {
   name: "IssueCredential",
-  components: { QrcodeVue, Info },
+  components: { Info, Loading },
   data() {
     return {
       description: "An issuer can issue a credential to a subject (or holder) which can be verfied by the verifier independently, without having him to connect with the issuer. They are a part of our daily lives; driver's licenses are used to assert that we are capable of operating a motor vehicle, university degrees can be used to assert our level of education, and government-issued passports enable us to travel between countries.  For example: an airline company can issue a flight ticket (\"verfiable credential\") using schema (issued by DGCA) to the passenger.",
@@ -242,15 +239,30 @@ export default {
       schemaList: [],
       fullPage: true,
       isLoading: false,
-      holderDid: ""
+      holderDid: "",
+      basic: {
+        name: "",
+        description: "",
+        serviceEndpoint: "",
+        did:""
+      },
+      advance: {
+        schemaId: "",
+        mail: {
+            host: "",
+            port: 0,
+            user: "",
+            pass: ""
+        },
+      },
+      hypersignJson: {}
     };
   },
   created() {
     const usrStr = localStorage.getItem("user");
     this.user = JSON.parse(usrStr);
-    //console.log(this.user)
     this.getList('SCHEMA')
-    this.getList('CREDENTIAL')
+    // this.getList('CREDENTIAL')
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -311,48 +323,6 @@ export default {
         this.vcList = j.message.list;
       }
     },
-    fetchData(url, option) {
-      fetch(url)
-        .then((res) => res.json())
-        .then((j) => {
-          if (j.status != 200) throw new Error(j.error);
-          return j.message;
-        })
-        .catch((e) => this.notifyErr(`Error: ${e.message}`));
-    },
-    gotosubpage: (id) => {
-      this.$router.push(`${id}`);
-    },
-    addBlankAttrBox() {
-      if (this.attributeName != " ") {
-        this.attributes.push(this.attributeName);
-        this.attributeName = " ";
-      }
-    },
-    onSchemaOptionChange(event) {
-      //console.log(event);
-      this.attributes = [];
-      this.issueCredAttributes = [];
-      this.selected = null;
-      this.credentialName = "";
-    },
-    OnSchemaSelectDropDownChange(event) {
-      //console.log(event);
-      if (event) {
-        this.issueCredAttributes = [];
-        const id = this.issueCredAttributes.length;
-        this.schemaMap[event].forEach((e) => {
-          this.issueCredAttributes.push({
-            id: id + event,
-            type: "text",
-            name: e,
-            value: "",
-          });
-        });
-      } else {
-        this.issueCredAttributes = [];
-      }
-    },
     forceFileDownload(data, fileName) {
       const url = window.URL.createObjectURL(new Blob([data]));
       const link = document.createElement("a");
@@ -363,94 +333,51 @@ export default {
     },
     downloadCredentials() {
       this.forceFileDownload(
-        JSON.stringify(this.signedVerifiableCredential),
-        "vc.json"
+        JSON.stringify(this.hypersignJson),
+        "hypersign.json"
       );
     },
-    generateAttributeMap() {
-      let attributesMap = [];
-      if (this.issueCredAttributes.length > 0) {
-        this.issueCredAttributes.forEach((e) => {
-          attributesMap[e.name] = e.value;
-        });
-      }
-      return attributesMap;
-    },
-
-    getCredentials(attributesMap) {
-      const schemaUrl = `${this.$config.nodeServer.BASE_URL}${this.$config.nodeServer.SCHEMA_GET_EP}/${this.selected}`;
-      return hypersignSDK.credential.generateCredential(schemaUrl, {
-        subjectDid: this.holderDid,
-        issuerDid: this.user.publicKey,
-        expirationDate: new Date().toISOString(),
-        attributesMap,
-      }).then((signedCred) => {
-        return signedCred;
-      });
-    },
-
-    signCredentials(credential) {
-      return hypersignSDK.credential.signCredential(credential, this.user.publicKey, this.user.privateKey).then(
-        (signedCredential) => {
-          return signedCredential;
-        }
-      );
-    },
-    async issueCredential() { 
+   async createApp(){
       try{
-        this.isLoading = true
-        if(this.holderDid == "") throw new Error("Please enter the holder did")
-        if(this.selected == null) throw new Error("Please select a schema")
+        this.isLoading = true;
+        setTimeout(async () => {
 
-      // generateAttributeMap
-      const attributeMap = await this.generateAttributeMap();
+        
+        const createAppUrl = `${this.$config.studioServer.BASE_URL}hs/api/v2/app/create`;
+        const data = {
+          basic : {},
+          advance: {}
+        };
 
-      const verifiableCredential = await this.getCredentials(attributeMap);
-      // signCredentials
-      const signedVerifiableCredential = await this.signCredentials(
-        verifiableCredential
-      );
-      this.signedVerifiableCredential = signedVerifiableCredential;
-
-      const url = `${this.$config.studioServer.BASE_URL}${this.$config.studioServer.CRED_ISSUE_EP}`;
-      const headers = {
-        "Content-Type": "application/json",
-        "x-auth-token": this.authToken,
-      };
-      const body = {
-        subject: this.subjectDid,
-        schemaId: this.selected,
-        dataHash: signedVerifiableCredential,
-        appId: "appI123",
-      };
-
-      fetch(url, {
-        method: "POST",
-        headers,
-        body: JSON.stringify(body),
-      })
-        .then((res) => res.json())
-        .then((j) => {
-          if (j.status != 200) throw new Error(`Error: ${j.error}`);
-          if (j.status === 200) {
-            this.isCredentialIssued = true;
-            this.onSchemaOptionChange(null);
-            this.vcList.push({
-              ...j.message
-            })
-            this.isLoading = false
-            this.notifySuccess("Credential successfully issued")
-          }
-        })
-        .catch((e) => {
-          this.isLoading = false
-          this.notifyErr(`Error: ${e.message}`)
+        Object.assign(data.basic, this.basic);
+        data.advance.schemaId = this.selected? this.selected: "";
+        const resp = await fetch(createAppUrl, {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: { "Content-Type": "application/json" }
         });
-      } catch(e){
-        this.isLoading = false
-        this.notifyErr(`Error: ${e.message}`)
+        const json =  await resp.json();
+        if (json.status === 200) {
+          console.log(json.message)
+          Object.assign(this.hypersignJson,json.message)
+          Object.assign(this.hypersignJson.mail, this.advance.mail)          
+          console.log(this.hypersignJson);
+          this.hypersignJson.mail.name = this.hypersignJson.app.appName;
+          
+          
+          this.downloadCredentials();
+          this.isLoading = false;
+          this.notifySuccess("App is created");
+          
+        }else{
+          throw new Error(`Error: ${json.error}`);
+        }
+        }, 2000)
+      }catch(e){
+        this.isLoading = false;
+        this.notifyErr(`Error: ${e.message}`);
       }
-    },
+    }
   },
 };
 </script>
