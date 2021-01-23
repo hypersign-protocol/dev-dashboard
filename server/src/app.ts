@@ -1,11 +1,12 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import { port, logger } from './config';
 import { User } from './services/user.service';
 import { Application } from './services/application.service';
-import path from 'path';
+import { Subscription } from './services/subscription.service';
+import { Pricing } from './services/pricing.service';
 import http from 'http';
 import fetch from 'node-fetch';
 
@@ -26,14 +27,14 @@ export default function app() {
         options
     });
 
-    
-
     app.use(express.json());
     app.use(cors());
     app.use(cookieParser());
     app.use(bodyParser.json());
     app.use(express.static('public'));
 
+    ///////////////////////////
+    /// Authentication related
     // Implement /hs/api/v2/auth API 
     app.post('/hs/api/v2/auth', hypersign.authenticate.bind(hypersign), async (req, res) => {
         try {
@@ -82,7 +83,6 @@ export default function app() {
 
     // use this api for verification of authorization token
     // this api gets called before each route in frontend
-    // hypersign.authorize.bind(hypersign), 
     app.post('/protected', hypersign.authorize.bind(hypersign), (req, res) => {
         try {
             const user = req.body.userData;
@@ -94,7 +94,12 @@ export default function app() {
             res.status(500).send({ status: 500, message: null, error: e.message });
         }
     });
+    ///
+    ///////////////////////////
 
+
+    ///////////////////////// 
+    ///Application related
     app.get('/hs/api/v2/app', hypersign.authorize.bind(hypersign), async (req, res) => {
         try{
             const {userData} = req.body;
@@ -106,7 +111,8 @@ export default function app() {
         }catch(e){
             res.status(500).send({ status: 500, message: null, error: e.message });
         }
-    })
+    });
+
     app.post('/hs/api/v2/app/create', hypersign.authorize.bind(hypersign), async (req, res) => {
         try {
             const {userData} = req.body;
@@ -166,10 +172,47 @@ export default function app() {
             res.status(500).send({ status: 500, message: null, error: e.message });
         }
     });
+    ///
+    ///////////////////////////
 
-    // Login page
-    // This became redundent
-    app.get('/', (req, res) => { res.sendFile(path.join(__dirname, '/index.html')) })
+    ///////////////////////// 
+    ///Pricing related
+    app.post('/hs/api/v2/price/create', async (req, res) => {
+        const plan = req.body;
+        plan.offerings = JSON.stringify(plan.offerings);
+        const pricing  = new Pricing({...plan});
+        const price = await pricing.create();
+        res.status(200).send({ status: 200, message: price, error: null });
+    })
+
+    app.get('/hs/api/v2/price', async (req, res) => { 
+        const pricing  = new Pricing({});
+        const pricings = await pricing.fetch();
+        res.status(200).send({ status: 200, message: pricings, error: null });
+    })
+    ///
+    ///////////////////////////
+
+    ///////////////////////// 
+    ///Subscription related
+    app.post('/hs/api/v2/subscription/create', hypersign.authorize.bind(hypersign), async (req, res) => {
+        const subscription = req.body;
+        subscription.subscriber = req.body.userData.id;
+        const subsObject  = new Subscription({...subscription});
+        const newSubscription = await subsObject.create();
+        res.status(200).send({ status: 200, message: newSubscription, error: null });
+    })
+
+    app.get('/hs/api/v2/subscription', hypersign.authorize.bind(hypersign), async (req, res) => { 
+        const pricing  = new Subscription({});
+        const subscriptions = await pricing.fetch({
+            subscriber: req.body.userData.id
+        });
+        res.status(200).send({ status: 200, message: subscriptions, error: null });
+    })
+    ///
+    ///////////////////////////
+
     
 
     server.listen(port, () => logger.info(`The server is running on port ${port}`));

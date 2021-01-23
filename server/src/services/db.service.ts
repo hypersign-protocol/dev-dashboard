@@ -4,12 +4,17 @@ const FieldMap = Object.freeze({
     User: ["id","fname","lname","phoneNumber","username","password","email","publicKey","privateKey","hash","birthdate","jobTitle", "isActive"],
     Application: ["id","name","did","owner", "schemaId", "serviceEp"],
     VerifiableCredential: ["id",    "subject",    "issuer",    "schemaId",    "dataHash"],
+    Pricing: ["id","planName","planId","planPrice","planDescription","offerings"],
+    Subscription: ["id",    "planId",    "subscriber"]
 })
+
 
 export enum SchemaType {
     User,
     Application,
-    VerifiableCredential
+    VerifiableCredential,
+    Pricing,
+    Subscription
 }
 
 enum QueryType{
@@ -47,6 +52,8 @@ export class DBService{
             case SchemaType.User: keysOfModel = FieldMap.User; break;
             case SchemaType.Application: keysOfModel = FieldMap.Application; break;
             case SchemaType.VerifiableCredential: keysOfModel = FieldMap.VerifiableCredential; break;            
+            case SchemaType.Pricing: keysOfModel = FieldMap.Pricing; break;            
+            case SchemaType.Subscription: keysOfModel = FieldMap.Subscription; break;            
         }
         return keysOfModel
     }
@@ -54,7 +61,7 @@ export class DBService{
     private getQuery(queryType: QueryType, schemaType: SchemaType): string{
         const tableName = SchemaType[schemaType];
         const keysOfModel = this.getModelFields(schemaType);
-        let query: string = ""
+        let query: string = "";
         switch(queryType){
             case QueryType.CreateTable: {
                 let restQuery = "";
@@ -147,15 +154,17 @@ export class DBService{
     getAll(type: SchemaType, params):Promise<Array<Object>>{
         return new Promise((resolve, reject) => {
             logger.info('Method: Get: schema type is ' + SchemaType[type])
-            const cols = Object.keys(params)
-            let query = this.getQuery(QueryType.GetRows, type) + ' WHERE '; // gET * from User 
-            cols.forEach((v, i)=> {
-                query = query + ' ' + v + ' = ? AND';
-            })
-            query = query.substring(0, query.lastIndexOf('AND'))
-            logger.debug('Before fetching the user query = ' + query)
-            const values = Object.keys(params).map(k => params[k])
-            logger.debug(`Values = `, values)
+            let query = this.getQuery(QueryType.GetRows, type);
+            let values: Array<string> = [];
+            if(Object.keys(params).length != 0){
+                query = query + ' WHERE '; // gET * from User 
+                const cols = Object.keys(params)
+                cols.forEach((v, i)=> {
+                    query = query + ' ' + v + ' = ? AND';
+                })
+                query = query.substring(0, query.lastIndexOf('AND'));
+                values = Object.keys(params).map(k => params[k])
+            }    
             db.all(query, values, (err, rows) => {
                 if (err) return reject(err)
                 return resolve(rows);
@@ -163,41 +172,6 @@ export class DBService{
         })
     }
     
-    // createTable (type: SchemaType): Promise<string>{
-    //     return new Promise((resolve, reject)=> {
-    //         if(type === schemaType.USER){                
-    //             logger.debug('Method: createTable: Before dropping User table: query = ', CREATE_USER_TABLE);
-    //             db.run(CREATE_USER_TABLE, (err, res) => {
-    //                 if(err) {
-    //                     reject(err)
-    //                 }
-    //                 logger.debug('Method: createTable: After dropping User table res = ', res);
-    //                 resolve("SUCCESS")
-    //             })
-    //         }
-    //     })
-        
-    // }
-
-    // add(type: schemaType, obj: any): Promise<any>{
-    //     return new Promise((resolve, reject)=> {
-    //         if(type === schemaType.USER){
-    //             logger.debug('Method: Add: schema type is USER')
-    //             const fields: IUser = <IUser> obj;
-    //             logger.debug('Method: Add: Before inserting the data');
-    //             db.run(ADD_USER, [fields.fname, fields.lname, fields.phoneNumber, fields.username, 
-    //                 fields.password ,fields.email, fields.publicKey, 
-    //                 fields.hash, fields.birthdate, fields.jobTitle], (err, res) => {
-    //                 if(err) reject(err)
-    //                 this.getOne(schemaType.USER, { publicKey: fields.publicKey }).then((res: IUser)=> {
-    //                     logger.debug('Method: Add: After inserting the data, newRecordId = ', res.id);
-    //                     resolve(res)
-    //                 })
-    //             })
-    //         }
-    //     })
-    // }
-
     update(type: SchemaType, params: {}, clause: {}): Promise<any> {
         return new Promise((resolve, reject) => {
             console.log(clause)

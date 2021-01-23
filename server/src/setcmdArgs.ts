@@ -1,7 +1,6 @@
 const commandLineArgs = require('command-line-args')
 const commandLineUsage = require('command-line-usage')
 import setupDb from './setup/db.setup';
-import { bootstrap } from './setup/bootstrapCredential'
 export default async function setCmdArgs() {
     const optionDefinitions = [
         {
@@ -22,12 +21,6 @@ export default async function setCmdArgs() {
             type: Boolean,
             description: 'Setup the database.'
         },
-        {
-            name: 'bootstrap',
-            alias: 'b',
-            type: Boolean,
-            description: 'Register a did and HypersignAuthCredentail on the network.'
-        }
     ]
     const options = commandLineArgs(optionDefinitions)
     if (options.help) {
@@ -51,12 +44,7 @@ export default async function setCmdArgs() {
         await setupDb();
         console.log("=====================Setting Up database===========================")
         return false;
-    } else if (options.bootstrap){
-        console.log("=====================Bootstraping did/schemas===========================")
-        await bootstrap();
-        console.log("=====================Bootstraping did/schemas===========================")
-    }
-    else {
+    } else {
         console.log(options)
         return true;
     }
