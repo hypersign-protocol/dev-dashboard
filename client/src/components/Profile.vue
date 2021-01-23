@@ -63,39 +63,44 @@
   <div class="row">
     <div class="col-md-12" style="margin-top:2%; margin-bottom:7%">
       <div class="row">
-        <div class="col-md-5">
+        <div class="col-md-3">
+          <div class="card">
+            <div class="card-body tile">{{credentialCount}}</div>
+            <div class="card-header">Applications</div>
+          </div>
+        </div>
+        <div class="col-md-3">
           <div class="card">
             <div class="card-body tile">{{schemaCount}}</div>
             <div class="card-header">Authored Schemas</div>
           </div>
         </div>
-        <div class="col-md-5">
+        <!-- <div class="col-md-3">
           <div class="card">
-            <div class="card-body tile">{{credentialCount}}</div>
-            <div class="card-header">Issued Credentials</div>
+            <div class="card-body tile">{{schemaCount}}</div>
+            <div class="card-header">Authored Schemas</div>
           </div>
-        </div>
+        </div> -->
+        
       </div>
     </div>
-    <div class="col-md-10 leftAlign">
+    <div class="col-md-6 leftAlign">
       <div class="card">
         <div class="card-body">
           <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
               <img
                 src="https://cdn1.iconfinder.com/data/icons/female-avatars-vol-1/256/female-portrait-avatar-profile-woman-sexy-afro-2-512.png"
                 alt="John"
                 style="width:100%;height: 100%;"
               />
             </div>
-            <div class="col-md-8" style="flex-wrap: wrap; padding:20px">
+            <div class="col-md-6" style="flex-wrap: wrap; padding:20px">
               <p>DID</p>
               <p class="fVal"><a :href="`${$config.nodeServer.BASE_URL}${$config.nodeServer.DID_RESOLVE_EP}`+user.id" target="_blank">{{user.id}}</a></p>
               <p>Email</p>
               <p class="fVal">{{user.Email}}</p>
               <p v-if="user.phoneNumber">Phone Number: {{user.phoneNumber}}</p>
-              <!-- <p>PUBLIC KEY</p>
-              <p class="fVal">{{user.publicKey}}</p> -->
             </div>
           </div>
         </div>
@@ -158,14 +163,14 @@ export default {
         }
       })
 
-      url = `${this.$config.studioServer.BASE_URL}${this.$config.studioServer.CRED_LIST_EP}`;
+      url = `${this.$config.studioServer.BASE_URL}hs/api/v2/app`;
       options  = {
           method: "GET",
-          headers: {'x-auth-token': this.authToken}
+          headers: { Authorization: `Bearer ${this.authToken}` },
         }
       this.fetchData(url,options).then(data => {
         if (data) {
-          this.credentialCount = data.count;
+          this.credentialCount = data.length;
         }
       })
     },

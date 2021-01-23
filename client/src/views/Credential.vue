@@ -297,7 +297,7 @@ img {
     </transition>
 
     <div class="row">
-      <div class="col-md-12" style="margin: 2%">
+      <div class="col-md-12" style="margin: 5%">
         <div class="row">
           <div class="card col-md-3" style="margin: 2%">
             <div class="card-body" style="min-height: 400px">
@@ -373,32 +373,18 @@ import fetch from "node-fetch";
 import Info from "@/components/Info.vue";
 import Loading from "vue-loading-overlay";
 export default {
-  name: "IssueCredential",
+  name: "CreateApplication",
   components: { Info, Loading },
   data() {
     return {
       description:
         'An issuer can issue a credential to a subject (or holder) which can be verfied by the verifier independently, without having him to connect with the issuer. They are a part of our daily lives; driver\'s licenses are used to assert that we are capable of operating a motor vehicle, university degrees can be used to assert our level of education, and government-issued passports enable us to travel between countries.  For example: an airline company can issue a flight ticket ("verfiable credential") using schema (issued by DGCA) to the passenger.',
-      active: 0,
       open: false,
       host: location.hostname,
       user: {},
       prevRoute: null,
-      attributeName: "",
-      attributes: [],
-      issueCredAttributes: [],
-      radioSelected: "create",
       credentialName: "",
-      isCredentialIssued: false,
-      signedVerifiableCredential: "",
-      credentials: JSON.parse(localStorage.getItem("credentials")),
-      subjectDid: "did:hs:AmitKumar",
-      radioOptions: [
-        { text: "Create new schema", value: "create" },
-        { text: "Select existing schema", value: "existing" },
-      ],
       selected: null,
-      attributeValues: {},
       authToken: localStorage.getItem("authToken"),
       selectOptions: [{ value: null, text: "Select a schema" }],
       schemaMap: {},
@@ -406,7 +392,6 @@ export default {
       schemaList: [],
       fullPage: true,
       isLoading: false,
-      holderDid: "",
       basic: {
         name: "",
         description: "",

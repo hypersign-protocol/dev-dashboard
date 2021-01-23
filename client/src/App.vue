@@ -59,32 +59,14 @@
   <div id="app">
     <div class="row nav-style">
       <div class="col-md-4">        
-        <!-- <h5 class="leftAlign">{{$config.app.name}}</h5>  -->
         <div class="form-group form-inline">
-          
           <h4 class="subtitle">  {{$config.app.name}} ({{$config.app.version}})</h4>  
         </div>
       </div>
         <div class="col-md-8 rightAlign" style="padding-top:12px" v-if="!(authRoutes.includes($router.history.current.name))">
-          <!-- <div > -->
             <button type="button" @click="goToNextPage(m.name)" class="btn btn-light btn-sm" v-for="m in menu" :key="m.name">{{m.name}}</button>    
-          <!-- </div> -->
-        </div>
-        
-        <!-- <h6
-          class="leftAlign"
-          style="color:grey; font-style: italic;"
-        >{{$config.app.decription}}</h6> -->
-        <!-- <h6 class="leftAlign" style="color:grey; font-style: italic;">Version: {{$config.app.version}}</h6> -->
-        <!-- <hr style="opacity: 1.5" /> -->
-      
+        </div>      
     </div>
-    <!-- <div class="row">
-      <div class="col-md-9 rightAlign marginLeft" v-if="!(authRoutes.includes($router.history.current.name))">
-        <button @click="goToNextPage(m.name)" class="btn btn-link btn-sm" v-for="m in menu" :key="m.name">{{m.name}}</button>
-        <hr style="opacity: 1.5" />
-      </div>
-    </div> -->
     <router-view />
     <notifications group="foo" />
   </div>
@@ -151,13 +133,13 @@ export default {
           isShow: true,
         },
         { 
-          name: "Credentials",  
-          path: "/studio/credential",
+          name: "Apps",  
+          path: "/studio/apps",
           isShow: true,
         },
         { 
-          name: "Presentation",  
-          path: "/studio/presentation",
+          name: "Subscription",  
+          path: "/studio/subscription",
           isShow: true,
         },
         {

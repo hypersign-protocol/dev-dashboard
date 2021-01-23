@@ -40,9 +40,6 @@
       <div class="col-md-12">
           <Profile/>
       </div>
-      <!-- <div class="col-md-6">
-        <Dashboard/>
-      </div> -->
      </div>    
    </div>
 </template>
