@@ -2,10 +2,12 @@ export default interface IApplication{
     id: string;
     planId: string; 
     subscriber: string; // owner's or admin's did
-    // subscriptionFromDate: string;
-    // subscriptionToDate: string;
-    // totalCalls: string;
-    // leftCalls: string;
+    subscriptionDate: string;
+    planName: string;
+    authCount: string; // how much has he exhausted
+    maxAuthCount: string; // comes from plan
+    numberOfApps: string;
+    maxAppsCounts: string; // comes from plan
 }
 
 

@@ -87,8 +87,10 @@
           <thead class="thead-light">
             <tr>
               <th>Subscription Id</th>
-              <th>Plan Id</th>
-              <th>Subscriber DID</th>              
+              <th>Subscription Date</th>
+              <th>Plan Name</th>
+              <th>Total Auth Count</th>
+              <th>Total Apps Count</th>
             </tr>
           </thead>
           <tbody>
@@ -96,8 +98,10 @@
               <th>
                 {{row.id}}
               </th>
-              <td>{{row.planId}}</td>
-              <td>{{row.subscriber}}</td>
+              <td>{{row.subscriptionDate}}</td>
+              <td>{{row.planName}}</td>
+              <td>{{row.maxAuthCount}}</td>
+              <td>{{row.maxAppsCounts}}</td>
             </tr>
           </tbody>
         </table>

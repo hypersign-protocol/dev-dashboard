@@ -5,8 +5,9 @@ const FieldMap = Object.freeze({
     Application: ["id","name","did","owner", "schemaId", "serviceEp"],
     VerifiableCredential: ["id",    "subject",    "issuer",    "schemaId",    "dataHash"],
     Pricing: ["id","planName","planId","planPrice","planDescription","offerings", "maxAppsCount",    "maxAuthCount",    "supportType" ],
-    Subscription: ["id",    "planId",    "subscriber"]
-})
+    Subscription: ["id",    "planId",    "subscriber", "subscriptionDate",    "planName",    "authCount",    "maxAuthCount",    "numberOfApps",    "maxAppsCounts"]
+
+    })
 
 
 export enum SchemaType {
