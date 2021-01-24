@@ -55,7 +55,7 @@ export default {
     this.user = JSON.parse(usrStr);
 
     this.subscriptionDetials = { ...this.user.subscriptionDetail };
-    this.subscriptionDetials.authCount = 50;//this.subscriptionDetials.authCount == ""  ? 0  : parseInt(this.subscriptionDetials.authCount);
+    this.subscriptionDetials.authCount = this.subscriptionDetials.authCount == ""  ? 0  : parseInt(this.subscriptionDetials.authCount);
     this.subscriptionDetials.maxAuthCount =
       this.subscriptionDetials.maxAuthCount == ""
         ? 0
