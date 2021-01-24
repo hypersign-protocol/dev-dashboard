@@ -89,8 +89,8 @@
               <th>Subscription Id</th>
               <th>Subscription Date</th>
               <th>Plan Name</th>
-              <th>Total Auth Count</th>
-              <th>Total Apps Count</th>
+              <th>Authentication Limit</th>
+              <th>Applications Limit</th>
             </tr>
           </thead>
           <tbody>
