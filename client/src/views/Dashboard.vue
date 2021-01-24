@@ -34,19 +34,23 @@
 
 </style>
 <template>
-   <div class="home marginRight marginLeft">
+   <div class="home  marginLeft marginRight">
      <h3 class="leftAlign">Welcome, {{user.Name}} !</h3>
      <div class="row">
-      <div class="col-md-12">
-          <Profile/>
-      </div>
+        <div class="col-md-6">
+            <Profile/>
+        </div>
+        <div class="col-md-6">
+            <Charts/>
+        </div>
      </div>    
-   </div>
+  </div>
 </template>
 
 
 <script>
 import Dashboard from '@/components/Dashboard.vue'
+import Charts from '@/components/Charts.vue'
 import Profile from '@/components/Profile.vue'
 export default {
   name: "PanelPage",
@@ -54,7 +58,8 @@ export default {
   },
   components: { 
     Dashboard,
-    Profile
+    Profile,
+    Charts
   },
   data() {
     return {
@@ -65,25 +70,8 @@ export default {
     };
   },
   created() {
-    const usrStr = localStorage.getItem('user')
-    //console.log(usrStr)
+    const usrStr = localStorage.getItem('user');    
     this.user = JSON.parse(usrStr);
-    //console.log(this.user)
-    // this.userKeys = Object.keys(this.user)
-    // const url = `http://${location.hostname}:9000/api/app/list`;
-    // fetch(url,{
-    //     headers: {
-    //       'x-auth-token': this.authToken
-    //     },
-    //     method: 'POST'
-    //   })
-    // .then(res => res.json())
-    // .then(json => {
-    //   if(json.status == 200){
-    //     this.appList = json.message.list
-    //   }
-    // })
-    // .catch(e => this.notifyErr(`${e.message}`))
   },
   methods: {
     notifySuccess(msg){

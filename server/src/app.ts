@@ -90,8 +90,13 @@ export default function app() {
             const subscriptions = await pricing.fetch({
                 subscriber: user.id
             });
+            const app = new Application({});
+            const appList = await app.fetch({
+                owner: user.id
+            });
             user.isSubscribed = subscriptions.length > 0 ? true: false;
             user.subscriptionDetail = subscriptions[0];
+            user.subscriptionDetail.numberOfApps = appList.length.toString();
             // Do whatever you want to do with it
             // Send a message or send to home page
             res.status(200).send({ status: 200, message: user, error: null });
