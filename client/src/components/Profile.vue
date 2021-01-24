@@ -88,9 +88,9 @@
       <div class="card">
         <div class="card-body">
           <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-4">
               <img
-                src="https://cdn1.iconfinder.com/data/icons/female-avatars-vol-1/256/female-portrait-avatar-profile-woman-sexy-afro-2-512.png"
+                src="/images/avatar1.png"
                 alt="John"
                 style="width:100%;height: 100%;"
               />

@@ -87,18 +87,15 @@
 }
 
 .card {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
   transition: 0.3s;
   width: 100%;
   border-radius: 5px;
 }
 
 .card:hover {
-  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
-/* .largebutton:hover {
-
-} */
 
 img {
   border-radius: 5px 5px 0 0;
@@ -295,11 +292,11 @@ img {
         </div>
       </div>
     </transition>
-
+    
     <div class="row">
-      <div class="col-md-12" style="margin: 5%">
+      <div class="col-md-12">
         <div class="row">
-          <div class="card col-md-3" style="margin: 2%">
+          <div class="card col-md-3" style=" margin-top: 3%; margin-left: 2%; margin-right: 2%">
             <div class="card-body" style="min-height: 400px">
               <p>
                 <button
@@ -308,12 +305,12 @@ img {
                   @click="toggle"
                 >
                   <img
-                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTM1zuIzhqqgnFPMdrXCxhCy0WXhr_YunLdAw&usqp=CAU"
+                    src="/images/plus-large.png"
                     style="width: 100%"
                   />
                 </button>
               </p>
-              <hr/>
+              <!-- <hr/> -->
               <h5 style="color: gray"><b>Create App</b></h5>
             </div>
           </div>
@@ -321,7 +318,7 @@ img {
             v-for="app in appList"
             :key="app.did"
             class="card col-md-3"
-            style="margin: 2%"
+            style="margin-left: 2%; margin-right: 2%; margin-top: 3%;"
           >
             <div class="card-body" style="min-height: 400px">
               <h4>
@@ -330,7 +327,7 @@ img {
               <hr />
               <p>
                 <img
-                  src="https://img.icons8.com/bubbles/2x/robot.png"
+                  src="/images/robot.png"
                   style="size: 100%"
                 />
               </p>

@@ -23,30 +23,82 @@
   float: right;
 }
 
-.card{
+.card {
   border-radius: 10px;
 }
 
 .card-header {
   background: aliceblue;
-  padding: 0px;
+  padding: 3px;
+  text-align: center;
+  color: grey;
+}
+
+.card {
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+  width: 100%;
+  border-radius: 5px;
+}
+
+.card:hover {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+.card-body {
+  color: grey;
 }
 </style>
 <template>
   <div class="home marginLeft marginRight">
-    <loading :active.sync="isLoading" 
-        :can-cancel="true" 
-        :is-full-page="fullPage"></loading>
-
+    <loading
+      :active.sync="isLoading"
+      :can-cancel="true"
+      :is-full-page="fullPage"
+    ></loading>
+<Info :message="description" />
     <div class="row">
-      <div class="col-md-12" style="text-align: left">
-        <Info :message="description"/>
+      <div v-for="price in pricingList" :key="price.id" class="col-md-4" style="text-align: left">
         <div class="card">
           <div class="card-header">
-            
+            <h4><b>{{price.planName}}</b></h4>
+            <p>{{price.planDescription}}</p>
           </div>
-          <div class="card-body"></div>
+          <div class="card-body">
+            <p style="font-size:x-large">{{price.planPrice}}</p>
+            <p>
+              <ul>
+                <li v-for="offers in price.offerings" :key="offers">
+                  {{offers}}
+                </li>
+              </ul>
+            </p>
+            <p style="text-align:center">
+              <button  class="btn btn-lg btn-primary btn-sm" @click="subscribe(price.id)" :disabled="price.isSubscribed">Subscribe</button>
+            </p>
+          </div>
         </div>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 2%;">
+      <div class="col-md-12">        
+        <table class="table table-bordered" style="background:#FFFF">
+          <thead class="thead-light">
+            <tr>
+              <th>Subscription Id</th>
+              <th>Plan Id</th>
+              <th>Subscriber DID</th>              
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in subscriptionList" :key="row">
+              <th>
+                {{row.id}}
+              </th>
+              <td>{{row.planId}}</td>
+              <td>{{row.subscriber}}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -54,264 +106,122 @@
 
 <script>
 import fetch from "node-fetch";
-import conf from '../config';
+import conf from "../config";
+import Loading from "vue-loading-overlay";
 const { hypersignSDK } = conf;
-import QrcodeVue from "qrcode.vue";
-import Info from '@/components/Info.vue'
+import Info from "@/components/Info.vue";
 export default {
   name: "Presentation",
-  components: { QrcodeVue, Info },
+  components: { Info, Loading },
   data() {
     return {
-      description: "The subject (or holder) generates verifiable presentation from one or more verifiable \
-      credentials, issued by one or more issuers, that is shared with a specific verifier. \
-      A verifiable presentation is a tamper-evident presentation encoded in such a way that \
-      authorship of the data can be trusted after a process of cryptographic verification. \
-      Certain types of verifiable presentations might contain data that is synthesized from, \
-      but do not contain, the original verifiable credentials for example, in order to proof the \
-      subject that he/she is an adult, she/he does not have to tell his/her actual age \
-      (i.e. Zero knowledge proof). The airline passenger might not have to show the complete ticket\
-      to the secruity personal to pass the security check. The passenger will have ability to show \
-      just one document (the verifiable presentation) derived from his passport and air ticket to\
-      show at the security check.",
+      description:
+        "The subject (or holder) generates verifiable presentation from one or more verifiable \
+      k.",
       active: 0,
       host: location.hostname,
       user: {},
       prevRoute: null,
-      attributeName: "",
-      attributes: [],
-      issueCredAttributes: [],
-      radioSelected: "create",
-      credentialName: "",
-      isCredentialIssued: false,
-      signedVerifiableCredential: "",
-      credentials: JSON.parse(localStorage.getItem("credentials")),
-      subjectDid: "did:hs:AmitKumar",
-      radioOptions: [
-        { text: "Create new schema", value: "create" },
-        { text: "Select existing schema", value: "existing" },
-      ],
-      selected: null,
-      attributeValues: {},
       authToken: localStorage.getItem("authToken"),
-      selectOptions: [{ value: null, text: "Please select a schema" }],
-      schemaMap: {},
-      vcList : [],
-      schemaList: [],
+      pricingList: [],
+      subscriptionList: [],
       fullPage: true,
       isLoading: false,
-      holderDid: "did:hs:8b915133-cb8b-4151-9a63-1b91f702297f",
-      signedVerifiablePresentation: {},
-      presentationDetails: {
-        credentialType: {}
-      },
-      isClaims: false
     };
   },
-  created() {
+  async created() {
     const usrStr = localStorage.getItem("user");
     this.user = JSON.parse(usrStr);
+
+    let url = `${this.$config.studioServer.BASE_URL}hs/api/v2/price`;
+    let options = {
+      method: "GET",
+    };
+
+    this.pricingList = await this.fetchData(url, options);
+    console.log(this.pricingList);
+
+    url = `${this.$config.studioServer.BASE_URL}hs/api/v2/subscription`;
+    options = {
+      method: "GET",
+      headers: { Authorization: `Bearer ${this.authToken}` },
+    };
+
+    this.subscriptionList = await this.fetchData(url, options);
+    console.log(this.subscriptionList);
+
+    this.pricingList = this.pricingList.map((x) => {
+      if (this.subscriptionList.some((y) => y.planId == x.id)) {
+        x.isSubscribed = true;
+      } else {
+        x.isSubscribed = false;
+      }
+      return x;
+    });
+    console.log(this.pricingList);
   },
+
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.prevRoute = from;
     });
   },
   methods: {
-    showClaims(){
-      if(this.isClaims) this.isClaims = false;
-      else this.isClaims = true;
+    async fetchData(url, options) {
+      this.isLoading = true;
+      const resp = await fetch(url, options);
+      const json = await resp.json();
+      if (json.error || json.status != 200) {
+        this.isLoading = false;
+        this.notifyErr(json.error);
+        return;
+      }
+      this.isLoading = false;
+      return json.message;
     },
-    notifySuccess(msg){
+    notifySuccess(msg) {
+      this.isLoading = false;
       this.$notify({
-          group: 'foo',
-          title: 'Information',
-          type: 'success',
-          text: msg
-        });
+        group: "foo",
+        title: "Information",
+        type: "success",
+        text: msg,
+      });
     },
-    notifyErr(msg){
+    notifyErr(msg) {
+      this.isLoading = false;
       this.$notify({
-          group: 'foo',
-          title: 'Error',
-          type: 'error',
-          text: msg
-        });
-    },
-    fetchData(url, option) {
-      fetch(url)
-        .then((res) => res.json())
-        .then((j) => {
-          if (j.status != 200) throw new Error(j.error);
-          return j.message;
-        })
-        .catch((e) => this.notifyErr(`Error: ${e.message}`));
+        group: "foo",
+        title: "Error",
+        type: "error",
+        text: msg,
+      });
     },
     gotosubpage: (id) => {
       this.$router.push(`${id}`);
     },
-    addBlankAttrBox() {
-      if (this.attributeName != " ") {
-        this.attributes.push(this.attributeName);
-        this.attributeName = " ";
-      }
-    },
-    onSchemaOptionChange(event) {
-      // console.log(event);
-      this.attributes = [];
-      this.issueCredAttributes = [];
-      this.selected = null;
-      this.credentialName = "";
-    },
-    OnSchemaSelectDropDownChange(event) {
-      // console.log(event);
-      if (event) {
-        this.issueCredAttributes = [];
-        const id = this.issueCredAttributes.length;
-        this.schemaMap[event].forEach((e) => {
-          this.issueCredAttributes.push({
-            id: id + event,
-            type: "text",
-            name: e,
-            value: "",
-          });
-        });
-      } else {
-        this.issueCredAttributes = [];
-      }
-    },
-    forceFileDownload(data, fileName) {
-      const url = window.URL.createObjectURL(new Blob([data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", fileName);
-      document.body.appendChild(link);
-      link.click();
-    },
-    downloadCredentials() {
-      this.forceFileDownload(
-        JSON.stringify(this.signedVerifiablePresentation),
-        "vp.json"
-      );
-    },
-    onfileLoadSuccess (evt){
-        // console.log('Inside callbacl')
-          const fileJSON = JSON.parse(evt.target.result);
-          if (!fileJSON) this.notifyErr("Incorrect file");
-          const typeArr = fileJSON["type"]
-          if(typeArr.find(x => x == 'VerifiableCredential')){
-            // console.log('Inside callbacl: vc')
-            localStorage.removeItem('credential')
-            localStorage.setItem("credential", JSON.stringify(fileJSON));  
-          }else if(typeArr.find(x => x == 'VerifiablePresentation')){
-            // console.log('Inside callbacl: vp')
-            localStorage.removeItem('presentation')
-            localStorage.setItem("presentation", JSON.stringify(fileJSON));  
-          }else{
-            this.notifyErr("Invalid file")
+    async subscribe(planId) {
+      let url = `${this.$config.studioServer.BASE_URL}hs/api/v2/subscription/create`;
+      let options = {
+        method: "POST",
+        body: JSON.stringify({
+          planId,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.authToken}`,
+        },
+      };
+      const resp = await this.fetchData(url, options);
+      if (resp) {
+        this.subscriptionList.push(resp);
+        this.pricingList = this.pricingList.map(x => {
+          if(x.id == resp.planId){
+            x.isSubscribed =  true;
           }
-    },
-    readFile(file, cb){
-      // console.log('Inside reaffileDs')
-      const reader = new FileReader();
-      reader.onload = cb
-      reader.readAsText(file);
-    },
-    onFileChange(event) {
-      const file = event.target.files[0];
-      this.readFile(file, this.onfileLoadSuccess)
-    },
-    getCredentials(attributesMap) {
-      const schemaUrl = `${this.$config.nodeServer.BASE_URL}${this.$config.nodeServer.SCHEMA_GET_EP}${this.selected}`;
-      return hypersignSDK.credential.generateCredential(schemaUrl, {
-        subjectDid: this.holderDid,
-        issuerDid: this.user.publicKey,
-        expirationDate: new Date().toISOString(),
-        attributesMap,
-      }).then((signedCred) => {
-        return signedCred;
-      });
-    },
-
-    signCredentials(credential) {
-      return hypersignSDK.credential.signCredential(credential, this.user.publicKey, this.user.privateKey).then(
-        (signedCredential) => {
-          return signedCredential;
-        }
-      );
-    },
-    async generatePresentation() {  
-      this.isLoading = true
-      try{
-        const vc = JSON.parse(localStorage.getItem("credential"));
-        if(!vc) throw new Error('Please select verifiable credential file')
-        const vp_unsigned = await hypersignSDK.credential.generatePresentation(vc, this.user.id);
-        const vp_signed = await hypersignSDK.credential.signPresentation(vp_unsigned, this.user.id, this.user.privateKey, "test_challenge")
-        this.signedVerifiablePresentation = vp_signed;
-        this.isLoading = false
-        this.isCredentialIssued = true;
-        this.notifySuccess("Presentation generated and sigend")
-        localStorage.removeItem('credential')
-      }catch(e){
-        this.isLoading = false
-        this.notifyErr(e.message)
-      }
-    },
-    viewPresentation(){
-        this.isLoading = true
-      try{
-      const vp = JSON.parse(localStorage.getItem("presentation"));
-      if(!vp) throw new Error('Please select verifiable presentation file')
-      // console.log(vp)
-      const vc = vp.verifiableCredential[0]
-      this.presentationDetails = {}
-      this.presentationDetails.credentialType = {
-        name :vc.type[1],
-        url: vc['@context'][1]['hsscheme']
-      }
-      this.presentationDetails.issuerDid = vc.issuer
-      this.presentationDetails.holderDid = vc.credentialSubject.id
-      this.presentationDetails.issuanceDate = vc.issuanceDate
-      this.presentationDetails.expirationDate = vc.expirationDate
-      this.presentationDetails.claim = vc.credentialSubject
-      }catch(e){
-        this.isLoading = false
-        this.notifyErr(e.message)
-      }
-    },
-    clear(){
-      this.presentationDetails = "",
-      localStorage.removeItem('presentation')
-      localStorage.removeItem('credential')
-      this.$refs.vpFile.value=null;
-      this.$refs.vcFile.value=null;
-      this.signedVerifiablePresentation = {}
-      this.isCredentialIssued =  false
-    },
-    async verifyPresentation() {  
-      this.isLoading = true
-      try{
-        const vp = JSON.parse(localStorage.getItem("presentation"));
-        if(!vp) throw new Error('Please select verifiable presentation file')
-        const vc = vp.verifiableCredential[0]
-        const isVerified = await hypersignSDK.credential.verifyPresentation(
-          {
-            presentation: vp, 
-            challenge: "test_challenge", 
-            issuerDid: vc.issuer, 
-            holderDid: vc.credentialSubject.id
-          });
-        // console.log(isVerified)
-        if(isVerified.verified){
-          this.notifySuccess("Presentation verified")
-        }else{
-          this.notifyErr("Presentation can not verified")
-        }
-        this.isLoading = false
-        this.clear()
-      }catch(e){
-        this.isLoading = false
-        this.notifyErr(e.message)
+          return x;
+        })
+        this.notifySuccess("Plan successfully subscribed");
       }
     },
   },

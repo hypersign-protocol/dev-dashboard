@@ -83,10 +83,14 @@ export default function app() {
 
     // use this api for verification of authorization token
     // this api gets called before each route in frontend
-    app.post('/protected', hypersign.authorize.bind(hypersign), (req, res) => {
+    app.post('/protected', hypersign.authorize.bind(hypersign), async (req, res) => {
         try {
             const user = req.body.userData;
-            console.log(user)
+            const pricing  = new Subscription({});
+            const subscriptions = await pricing.fetch({
+                subscriber: user.id
+            });
+            user.isSubscribed = subscriptions.length > 0 ? true: false;
             // Do whatever you want to do with it
             // Send a message or send to home page
             res.status(200).send({ status: 200, message: user, error: null });
@@ -187,7 +191,12 @@ export default function app() {
 
     app.get('/hs/api/v2/price', async (req, res) => { 
         const pricing  = new Pricing({});
-        const pricings = await pricing.fetch();
+        let pricings = await pricing.fetch();
+        pricings = pricings.map(x => {
+            const obj =  Object.assign({}, x);
+            obj['offerings'] = JSON.parse(obj['offerings'])
+            return obj
+        });
         res.status(200).send({ status: 200, message: pricings, error: null });
     })
     ///
@@ -196,11 +205,17 @@ export default function app() {
     ///////////////////////// 
     ///Subscription related
     app.post('/hs/api/v2/subscription/create', hypersign.authorize.bind(hypersign), async (req, res) => {
-        const subscription = req.body;
-        subscription.subscriber = req.body.userData.id;
-        const subsObject  = new Subscription({...subscription});
-        const newSubscription = await subsObject.create();
-        res.status(200).send({ status: 200, message: newSubscription, error: null });
+        try{
+            const subscription = req.body;
+            if(!subscription || !subscription.planId) throw new Error('PlanId is not passed');
+            subscription.subscriber = req.body.userData.id;
+            const subsObject  = new Subscription({...subscription});
+            const newSubscription = await subsObject.create();
+            res.status(200).send({ status: 200, message: newSubscription, error: null });
+        }catch(e){
+            res.status(500).send({ status: 500, message: null, error: e.message });
+        }
+        
     })
 
     app.get('/hs/api/v2/subscription', hypersign.authorize.bind(hypersign), async (req, res) => { 

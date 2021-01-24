@@ -117,36 +117,6 @@ export default {
         this.$router.push('/login')
                 }
     },
-    // createApp(){
-    //   if(!this.appName) this.notifyErr('AppName can not be blank')
-    //   const url = `http://${location.hostname}:9000/api/app/register`;
-    //   const appData = {
-    //     name: this.appName
-    //   }
-    //   fetch(url,{
-    //       body: JSON.stringify(appData),
-    //       method: 'POST',
-    //       headers: {
-    //         'x-auth-token': this.authToken,
-    //         'Accept': 'application/json',
-    //         'Content-Type': 'application/json'
-    //       }
-    //     })
-    //   .then(res => res.json())
-    //   .then(json => {
-    //     if(json.status == 200){
-    //       this.appList.push(json.message)
-    //       this.notifySuccess("App successfully created")
-    //     }
-    //   })
-    //   .catch(e => {
-    //     this.notifyErr(e.message)
-    //   })
-    // },
-    // goToDetailsPage: function(id) {
-    //     this.$router.push("/studio/apps/"+id);
-    // }
-
   }
 };
 </script>

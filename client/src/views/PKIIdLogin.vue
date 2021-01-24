@@ -64,7 +64,7 @@ h5 span {
                   <p>Don’t have the app yet?
                   <div>
                     <span class="download">
-                      <a href="https://play.google.com/store/apps/details?id=com.hypersign.cordova" target="_blank"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" height="60" width="200"/></a>
+                      <a href="https://play.google.com/store/apps/details?id=com.hypersign.cordova" target="_blank"><img src="/images/gplaybadge.png" height="60" width="200"/></a>
                     </span>
                   </div>
                 </div>

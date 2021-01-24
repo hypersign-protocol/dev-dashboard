@@ -149,7 +149,6 @@ color: #888b8f;
                 </div>
               </th>
               <td>{{row.credentialName}}</td>
-              <!-- <td>{{row.attributes}}</td> -->
               <td
                 style="word-wrap: break-word;min-width: 200px;max-width: 200px;"
               >{{row.attributes}}</td>
@@ -158,10 +157,7 @@ color: #888b8f;
             </tr>
           </tbody>
         </table>
-        <!-- </div> -->
-        <!-- </div> -->
       </div>
-      <!-- </div> -->
     </div>
   </div>
 </template>

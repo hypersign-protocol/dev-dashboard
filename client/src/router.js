@@ -35,19 +35,6 @@ const router = new Router({
             }
         },
         {
-            path: '/studio/register',
-            name: 'register',
-            component: Register
-        },
-        // {
-        //   path: '/studio/profile',
-        //   name: 'profile',
-        //   component: Profile,
-        //   meta: {
-        //     requiresAuth: true
-        //   } 
-        // },
-        {
             path: '/studio/schema',
             name: 'schema',
             component: Schema,
@@ -55,14 +42,6 @@ const router = new Router({
                 requiresAuth: true
             }
         },
-        // {
-        //   path: '/studio/apps/:appId',
-        //   name: 'appdetails',
-        //   component: AppDetails,
-        //   meta: {
-        //     requiresAuth: true
-        //   } 
-        // },
         {
             path: '/studio/apps',
             name: 'apps',
@@ -76,17 +55,9 @@ const router = new Router({
             name: 'presentation',
             component: Presentation,
             meta: {
-                requiresAuth: true
+                requiresAuth: false
             }
         },
-        // {
-        //   path: '/studio/apps/:appId/issue',
-        //   name: 'issueCredential',
-        //   component: IssueCredential,
-        //   meta: {
-        //     requiresAuth: true
-        //   } 
-        // }
     ]
 })
 
@@ -114,8 +85,15 @@ router.beforeEach((to, from, next) => {
                     } else {
                         console.log(json.message)
                         localStorage.setItem("user", JSON.stringify(json.message));
-                        // localStorage.setItem("subscription", JSON.stringify(json.message));
-                        next()
+                        /studio/ / next()
+                        if (!json.message.isSubscribed) {
+                            next({
+                                path: '/studio/subscription',
+                                params: { nextUrl: to.fullPath }
+                            })
+                        } else {
+                            next()
+                        }
                     }
                 })
                 .catch((e) => {
