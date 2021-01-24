@@ -1,10 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import PKIIdLogin from './views/PKIIdLogin.vue';
-import Register from './views/Register.vue';
 import config from './config';
-import Credential from './views/Credential.vue';
-import Presentation from './views/Presentation.vue';
+import Application from './views/Application.vue';
+import Subscription from './views/Subscription.vue';
 import Dashboard from './views/Dashboard.vue';
 import fetch from 'node-fetch';
 import Schema from './views/Schema.vue';
@@ -49,7 +48,7 @@ const router = new Router({
         {
             path: '/studio/apps',
             name: 'apps',
-            component: Credential,
+            component: Application,
             meta: {
                 requiresAuth: true
             }
@@ -57,7 +56,7 @@ const router = new Router({
         {
             path: '/studio/subscription',
             name: 'presentation',
-            component: Presentation,
+            component: Subscription,
             meta: {
                 requiresAuth: false
             }
