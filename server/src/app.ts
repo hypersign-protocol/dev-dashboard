@@ -91,6 +91,7 @@ export default function app() {
                 subscriber: user.id
             });
             user.isSubscribed = subscriptions.length > 0 ? true: false;
+            user.subscriptionDetail = subscriptions[0];
             // Do whatever you want to do with it
             // Send a message or send to home page
             res.status(200).send({ status: 200, message: user, error: null });
