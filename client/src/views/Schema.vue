@@ -60,7 +60,7 @@ color: #888b8f;
 
     <div class="row">
       <div class="col-md-12" style="text-align: left">
-        <Info :message="description"/>
+        <!-- <Info :message="description"/> -->
         <div class="card">
           <div class="card-header">
             <b-button v-b-toggle.collapse-1 variant="link">Create Schema</b-button>

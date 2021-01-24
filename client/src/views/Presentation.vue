@@ -55,7 +55,7 @@
       :can-cancel="true"
       :is-full-page="fullPage"
     ></loading>
-<Info :message="description" />
+<!-- <Info :message="description" /> -->
     <div class="row">
       <div v-for="price in pricingList" :key="price.id" class="col-md-4" style="text-align: left">
         <div class="card">

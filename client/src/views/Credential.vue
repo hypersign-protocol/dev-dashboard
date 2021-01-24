@@ -114,7 +114,7 @@ img {
           :can-cancel="true"
           :is-full-page="fullPage"
         ></loading>
-        <Info :message="description" />
+        <!-- <Info :message="description" /> -->
         <!-- <div>
           <button
             class="btn btn-outline-primary btn-sm"
@@ -296,7 +296,7 @@ img {
     <div class="row">
       <div class="col-md-12">
         <div class="row">
-          <div class="card col-md-3" style=" margin-top: 3%; margin-left: 2%; margin-right: 2%">
+          <div class="card col-md-3" style=" margin-top: 1%; margin-left: 2%; margin-right: 2%">
             <div class="card-body" style="min-height: 400px">
               <p>
                 <button
@@ -318,7 +318,7 @@ img {
             v-for="app in appList"
             :key="app.did"
             class="card col-md-3"
-            style="margin-left: 2%; margin-right: 2%; margin-top: 3%;"
+            style="margin-left: 2%; margin-right: 2%; margin-top: 1%;"
           >
             <div class="card-body" style="min-height: 400px">
               <h4>
