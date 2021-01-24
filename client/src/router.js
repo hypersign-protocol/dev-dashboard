@@ -22,6 +22,10 @@ const router = new Router({
             redirect: '/studio/login'
         },
         {
+            path: '/login',
+            redirect: '/studio/login'
+        },
+        {
             path: '/studio/login',
             name: 'PKIIdLogin',
             component: PKIIdLogin
