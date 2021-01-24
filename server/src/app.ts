@@ -192,11 +192,11 @@ export default function app() {
     app.get('/hs/api/v2/price', async (req, res) => { 
         const pricing  = new Pricing({});
         let pricings = await pricing.fetch();
-        pricings = pricings.map(x => {
-            const obj =  Object.assign({}, x);
-            obj['offerings'] = JSON.parse(obj['offerings'])
-            return obj
-        });
+        // pricings = pricings.map(x => {
+        //     const obj =  Object.assign({}, x);
+        //     obj['offerings'] = JSON.parse(obj['offerings'])
+        //     return obj
+        // });
         res.status(200).send({ status: 200, message: pricings, error: null });
     })
     ///

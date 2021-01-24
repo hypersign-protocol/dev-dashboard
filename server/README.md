@@ -2,7 +2,9 @@
 
 ```
 npm i
-npm run build && npm run start
+npm run build
+npm run newdb
+npm run start
 ```
 
 The server Will run on port `:4006`

@@ -63,14 +63,16 @@
             <h4><b>{{price.planName}}</b></h4>
             <p>{{price.planDescription}}</p>
           </div>
-          <div class="card-body">
+          <div class="card-body" style="text-align:center">
             <p style="font-size:x-large">{{price.planPrice}}</p>
             <p>
-              <ul>
-                <li v-for="offers in price.offerings" :key="offers">
-                  {{offers}}
-                </li>
-              </ul>
+              Connect upto <b>{{price.maxAppsCount}}</b> Applications.
+            </p>
+            <p>
+              <b>{{price.maxAuthCount}}</b> auth requests.
+            </p>
+            <p>
+              {{price.supportType}}
             </p>
             <p style="text-align:center">
               <button  class="btn btn-lg btn-primary btn-sm" @click="subscribe(price.id)" :disabled="price.isSubscribed">Subscribe</button>

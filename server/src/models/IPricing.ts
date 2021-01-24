@@ -5,4 +5,7 @@ export default interface IPricing{
     planPrice: string;
     planDescription: string;
     offerings: string;
+    maxAppsCount: string;
+    maxAuthCount: string;
+    supportType: string;
 }

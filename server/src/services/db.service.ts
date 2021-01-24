@@ -4,7 +4,7 @@ const FieldMap = Object.freeze({
     User: ["id","fname","lname","phoneNumber","username","password","email","publicKey","privateKey","hash","birthdate","jobTitle", "isActive"],
     Application: ["id","name","did","owner", "schemaId", "serviceEp"],
     VerifiableCredential: ["id",    "subject",    "issuer",    "schemaId",    "dataHash"],
-    Pricing: ["id","planName","planId","planPrice","planDescription","offerings"],
+    Pricing: ["id","planName","planId","planPrice","planDescription","offerings", "maxAppsCount",    "maxAuthCount",    "supportType" ],
     Subscription: ["id",    "planId",    "subscriber"]
 })
 
@@ -106,6 +106,7 @@ export class DBService{
                 if(err) {
                     reject(err)
                 }
+                console.log('Table "' + SchemaType[type] + '" created.');
                 logger.debug(`Method: createTable: After creating  ${SchemaType[type]} table res= ${res}`);
                 resolve("SUCCESS")
             })

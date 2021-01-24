@@ -1,5 +1,6 @@
 import { SchemaType, DBService } from '../services/db.service';
 import { logger } from '../config'
+import  create  from './pricing.setup';
 
 let dbService: DBService;
 dbService = new DBService();
@@ -28,7 +29,9 @@ export default  async function setupDb(){
         await createTable(SchemaType.Application) 
         await createTable(SchemaType.VerifiableCredential)
         await createTable(SchemaType.Pricing)  
-        await createTable(SchemaType.Subscription)  
+        await createTable(SchemaType.Subscription)
+        
+        await create();
     }
     catch(e){
         logger.error(e)
