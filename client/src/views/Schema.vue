@@ -63,7 +63,7 @@ color: #888b8f;
         <!-- <Info :message="description"/> -->
         <div class="card">
           <div class="card-header">
-            <b-button v-b-toggle.collapse-1 variant="link">Create Schema</b-button>
+            <b-button v-b-toggle.collapse-1 variant="link">Schema Configuration</b-button>
           </div>
           <b-collapse id="collapse-1" class="mt-2">
             <div class="card-body">
@@ -132,11 +132,11 @@ color: #888b8f;
         <table class="table table-bordered" style="background:#FFFF">
           <thead class="thead-light">
             <tr>
-              <th>id</th>
-              <th>credentialName</th>
-              <th>attributes</th>
-              <th>version</th>
-              <th>owner</th>
+              <th>Schema Id</th>
+              <th>Schema Name</th>
+              <th>Attributes</th>
+              <th>Version</th>
+              <th>Description</th>
             </tr>
           </thead>
 
@@ -144,16 +144,15 @@ color: #888b8f;
             <tr v-for="row in schemaList" :key="row">
               <th>
                 <div class="custom-control custom-checkbox">
-                  <input type="checkbox" class="custom-control-input" :id="row.id" />
-                  <label class="custom-control-label" :for="row.id"><a :href="`${$config.nodeServer.BASE_URL}${$config.nodeServer.SCHEMA_GET_EP}/`+row.id" target="_blank">{{row.id}}</a></label>
+                  <label :for="row.id"><a :href="`${$config.nodeServer.BASE_URL}${$config.nodeServer.SCHEMA_GET_EP}/`+row.id" target="_blank">{{row.id}}</a></label>
                 </div>
               </th>
               <td>{{row.credentialName}}</td>
               <td
                 style="word-wrap: break-word;min-width: 200px;max-width: 200px;"
-              >{{row.attributes}}</td>
+              ><div class="sm-tiles" v-for="attr in JSON.parse(row.attributes)" :key="attr">{{attr}}</div></td>
               <td>{{row.version}}</td>
-              <td>{{row.owner}}</td>
+              <td>{{row.description}}</td>
             </tr>
           </tbody>
         </table>
