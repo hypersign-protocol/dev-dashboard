@@ -16,6 +16,7 @@
   height: 100%;
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
   transition: all 0.5s ease-in-out;
+  font-size: large;
 }
 
 /* before the element is shown, start off the screen to the right */
@@ -119,7 +120,7 @@ img {
     <transition name="slide">
       <div class="slidein" v-if="open">
         <div class="card" style="text-align: left; min-height: 100%">
-          <div class="card-header">
+          <div class="card-header" style="padding: 2%">
             <b-button variant="link" style="float: left" @click="toggle"
               >x</b-button
             >
