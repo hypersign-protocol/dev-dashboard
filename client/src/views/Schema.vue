@@ -298,25 +298,10 @@ export default {
         this.attributeName = " ";
       }
     },
-    onSchemaOptionChange(event) {
+    clearFields() {
       this.attributes = [];
-      this.issueCredAttributes = [];
-      this.selected = null;
+      this.credentialDescription = "";
       this.credentialName = "";
-    },
-    OnSchemaSelectDropDownChange(event) {
-      if (event) {
-        this.issueCredAttributes = [];
-        this.schemaMap[event].forEach((e) => {
-          this.issueCredAttributes.push({
-            type: "text",
-            name: e,
-            value: "",
-          });
-        });
-      } else {
-        this.issueCredAttributes = [];
-      }
     },
     forceFileDownload(data, fileName) {
       const url = window.URL.createObjectURL(new Blob([data]));
@@ -374,7 +359,7 @@ export default {
         .then((j) => {
           if (j.status === 200) {
             this.notifySuccess("Credential successfull created");
-            this.credentialName = j.message.credentialName;
+            // this.credentialName = j.message.credentialName;
             this.schemaList.push({
               ...j.message,
             });
@@ -385,6 +370,10 @@ export default {
             this.notifyErr(`Error: ${j.error}`);
           }
         });
+
+        this.clearFields()
+      
+
     },
   },
 };

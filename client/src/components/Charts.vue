@@ -3,7 +3,7 @@
     <div class="col-md-12">
       <vc-donut
         background="white"
-        foreground="grey"
+        foreground="#60c860"
         :size="300"
         unit="px"
         :thickness="30"
@@ -46,8 +46,8 @@ export default {
       user: {},
       subscriptionDetials: {},
       leftApps: 0,
-      sections: [{ label: "Used Auth Requests", value: 0, color: "red" }],
-      sectionsApps: [{ label: "Apps Created", value: 0, color: "red" }],
+      sections: [{ label: "Used Auth Requests", value: 0, color: "#ed5c5c" }],
+      sectionsApps: [{ label: "Apps Created", value: 0, color: "#ed5c5c" }],
     };
   },
   created() {
@@ -55,7 +55,7 @@ export default {
     this.user = JSON.parse(usrStr);
 
     this.subscriptionDetials = { ...this.user.subscriptionDetail };
-    this.subscriptionDetials.authCount = this.subscriptionDetials.authCount == ""  ? 0  : parseInt(this.subscriptionDetials.authCount);
+    this.subscriptionDetials.authCount = 100//this.subscriptionDetials.authCount == ""  ? 0  : parseInt(this.subscriptionDetials.authCount);
     this.subscriptionDetials.maxAuthCount =
       this.subscriptionDetials.maxAuthCount == ""
         ? 0
@@ -74,7 +74,6 @@ export default {
     this.leftAuthPercentage =
       this.subscriptionDetials.maxAuthCount -
       this.subscriptionDetials.authCount;
-    console.log(JSON.stringify(this.subscriptionDetials));
     this.leftApps =
       this.subscriptionDetials.maxAppsCounts -
       this.subscriptionDetials.numberOfApps;
@@ -84,7 +83,6 @@ export default {
   },
   methods: {
     handleSectionClick(section, event) {
-      console.log(`${section.label} clicked.`);
     },
   },
 };

@@ -563,7 +563,29 @@ notifyErr(msg) {
         this.isLoading = false;
         this.notifyErr(`Error: ${e.message}`);
       }
+      this.cleanFields()
     },
+    cleanFields(){
+      Object.assign(this.basic,{
+        name: "",
+        description: "",
+        serviceEndpoint: "",
+        did: "",
+        logoUrl: "",
+      })
+      Object.assign(this.advance , {
+        schemaId: "",
+        mail: {
+          host: "",
+          port: 0,
+          user: "",
+          pass: "",
+        },
+      })
+      this.toggle();
+      this.selected = null;
+    }
+
   },
 };
 </script>
