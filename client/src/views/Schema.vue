@@ -26,47 +26,50 @@
   background: aliceblue;
   padding: 0px;
 }
-.sm-tiles{
+.sm-tiles {
   float: left;
-padding: 5px;
-border: 1px solid #8080807d;
-margin: 1%;
-border-radius: 5px;
-background: #f5dda71c;
-color: #888b8f;
+  padding: 5px;
+  border: 1px solid #8080807d;
+  margin: 1%;
+  border-radius: 5px;
+  background: #f5dda71c;
+  color: #888b8f;
 }
-.sm-tiles:hover{
-    float: left;
-padding: 5px;
-border: 1px solid #8080807d;
-margin: 1%;
-border-radius: 5px;
-background: #f5dda7a3;;
-font-style: bold ;
-color: #888b8f;
+.sm-tiles:hover {
+  float: left;
+  padding: 5px;
+  border: 1px solid #8080807d;
+  margin: 1%;
+  border-radius: 5px;
+  background: #f5dda7a3;
+  font-style: bold;
+  color: #888b8f;
 }
 
-
-.card{
+.card {
   border-radius: 10px;
 }
-
 </style>
 <template>
   <div class="home marginLeft marginRight">
-    <loading :active.sync="isLoading" 
-        :can-cancel="true" 
-        :is-full-page="fullPage"></loading>
+    <loading
+      :active.sync="isLoading"
+      :can-cancel="true"
+      :is-full-page="fullPage"
+    ></loading>
 
     <div class="row">
       <div class="col-md-12" style="text-align: left">
         <!-- <Info :message="description"/> -->
         <div class="card">
           <div class="card-header">
-            <b-button v-b-toggle.collapse-1 variant="link">Schema Configuration</b-button>
+            <b-button v-b-toggle.collapse-1 variant="link"
+              >Schema Configuration</b-button
+            >
           </div>
           <b-collapse id="collapse-1" class="mt-2">
             <div class="card-body">
+              <Errors v-if="errors.length > 0" :errors="errors" />
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group form-inline">
@@ -102,14 +105,18 @@ color: #888b8f;
                     />
                     <a
                       class="btn btn-primary"
-                      style="margin-left: 2%; border-radius:30px; color:white"
+                      style="margin-left: 2%; border-radius: 30px; color: white"
                       v-on:click="addBlankAttrBox()"
-                    >+</a>
+                      >+</a
+                    >
                   </div>
-                  <div class="form-group" style="min-height:150px;max-height:150px;overflow: auto">
+                  <div
+                    class="form-group"
+                    style="min-height: 150px; max-height: 150px; overflow: auto"
+                  >
                     <div v-for="attr in attributes" :key="attr">
                       <div class="sm-tiles">
-                        {{attr}}
+                        {{ attr }}
                         <span>x</span>
                       </div>
                     </div>
@@ -118,8 +125,13 @@ color: #888b8f;
               </div>
               <div class="row">
                 <div class="col-md-12">
-                  <hr/>
-                  <button class="btn btn-outline-primary btn-sm" @click="createSchema()">Create</button>
+                  <hr />
+                  <button
+                    class="btn btn-outline-primary btn-sm"
+                    @click="createSchema()"
+                  >
+                    Create
+                  </button>
                 </div>
               </div>
             </div>
@@ -127,9 +139,9 @@ color: #888b8f;
         </div>
       </div>
     </div>
-    <div class="row" style="margin-top: 2%;">
-      <div class="col-md-12">        
-        <table class="table table-bordered" style="background:#FFFF">
+    <div class="row" style="margin-top: 2%">
+      <div class="col-md-12">
+        <table class="table table-bordered" style="background: #ffff">
           <thead class="thead-light">
             <tr>
               <th>Schema Id</th>
@@ -144,15 +156,36 @@ color: #888b8f;
             <tr v-for="row in schemaList" :key="row">
               <th>
                 <div class="custom-control custom-checkbox">
-                  <label :for="row.id"><a :href="`${$config.nodeServer.BASE_URL}${$config.nodeServer.SCHEMA_GET_EP}/`+row.id" target="_blank">{{row.id}}</a></label>
+                  <label :for="row.id"
+                    ><a
+                      :href="
+                        `${$config.nodeServer.BASE_URL}${$config.nodeServer.SCHEMA_GET_EP}/` +
+                        row.id
+                      "
+                      target="_blank"
+                      >{{ row.id }}</a
+                    ></label
+                  >
                 </div>
               </th>
-              <td>{{row.credentialName}}</td>
+              <td>{{ row.credentialName }}</td>
               <td
-                style="word-wrap: break-word;min-width: 200px;max-width: 200px;"
-              ><div class="sm-tiles" v-for="attr in JSON.parse(row.attributes)" :key="attr">{{attr}}</div></td>
-              <td>{{row.version}}</td>
-              <td>{{row.description}}</td>
+                style="
+                  word-wrap: break-word;
+                  min-width: 200px;
+                  max-width: 200px;
+                "
+              >
+                <div
+                  class="sm-tiles"
+                  v-for="attr in JSON.parse(row.attributes)"
+                  :key="attr"
+                >
+                  {{ attr }}
+                </div>
+              </td>
+              <td>{{ row.version }}</td>
+              <td>{{ row.description }}</td>
             </tr>
           </tbody>
         </table>
@@ -164,13 +197,17 @@ color: #888b8f;
 <script>
 import fetch from "node-fetch";
 import QrcodeVue from "qrcode.vue";
-import Info from '@/components/Info.vue'
+import Info from "@/components/Info.vue";
+import Errors from "@/components/Errors.vue";
+import Loading from "vue-loading-overlay";
+import { specialCharCheck } from '../utils/utility';
 export default {
   name: "IssueCredential",
-  components: { QrcodeVue, Info },
+  components: { QrcodeVue, Info, Errors, Loading },
   data() {
     return {
-      description: "Credential Schema defines what information will go inside a verifiable credential. For example: Directorate General of Civil Aviation (DGCA) can define a schema (or format) for flights tickets, being issued by all airline companies in India.",
+      description:
+        "Credential Schema defines what information will go inside a verifiable credential. For example: Directorate General of Civil Aviation (DGCA) can define a schema (or format) for flights tickets, being issued by all airline companies in India.",
       active: 0,
       host: location.hostname,
       user: {},
@@ -197,7 +234,8 @@ export default {
       schemaList: [],
       credentialDescription: "",
       fullPage: true,
-      isLoading: false
+      isLoading: false,
+      errors: [],
     };
   },
   created() {
@@ -211,21 +249,21 @@ export default {
     });
   },
   methods: {
-    notifySuccess(msg){
-        this.$notify({
-          group: 'foo',
-          title: 'Information',
-          type: 'success',
-          text: msg
-        });
-    },
-    notifyErr(msg){
+    notifySuccess(msg) {
       this.$notify({
-          group: 'foo',
-          title: 'Error',
-          type: 'error',
-          text: msg
-        });
+        group: "foo",
+        title: "Information",
+        type: "success",
+        text: msg,
+      });
+    },
+    notifyErr(msg) {
+      this.$notify({
+        group: "foo",
+        title: "Error",
+        type: "error",
+        text: msg,
+      });
     },
     fetchSchemas() {
       const url = `${this.$config.nodeServer.BASE_URL}${this.$config.nodeServer.SCHEMA_LIST_EP}`;
@@ -294,13 +332,29 @@ export default {
         "vc.json"
       );
     },
-    createSchema() {
-        
-      this.isLoading = true
+    fieldValidations() {
+      this.errors = [];
       if (this.credentialName == "")
-        return this.notifyErr("Error: SchemaName can not be blank");
+        this.errors.push("Schema Name can not be empty");
       if (this.attributes.length == 0)
-        return this.notifyErr("Error: Atleast one attribute is required");
+        this.errors.push("Atleast one attribute is required");
+
+      if (this.credentialName != "" && specialCharCheck(this.credentialName))
+        this.errors.push("Schema Name can not contain special character");
+
+      if (this.errors.length > 0) return false;
+      else return true;
+    },
+    createSchema() {
+      if (!this.fieldValidations()) {
+          setTimeout(() => {
+            this.errors = []
+          }, 5000)
+          return
+      };
+
+      this.isLoading = true;
+
       const url = `${this.$config.nodeServer.BASE_URL}${this.$config.nodeServer.SCHEMA_CREATE_EP}`;
       const schemaData = {
         name: this.credentialName,
@@ -325,9 +379,9 @@ export default {
               ...j.message,
             });
             this.schemaMap[j.message.id] = this.attributes;
-            this.isLoading = false
+            this.isLoading = false;
           } else {
-            this.isLoading = false
+            this.isLoading = false;
             this.notifyErr(`Error: ${j.error}`);
           }
         });

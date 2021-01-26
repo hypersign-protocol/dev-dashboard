@@ -114,16 +114,6 @@ img {
           :can-cancel="true"
           :is-full-page="fullPage"
         ></loading>
-        <!-- <Info :message="description" /> -->
-        <!-- <div>
-          <button
-            class="btn btn-outline-primary btn-sm"
-            style="float: right"
-            @click="toggle"
-          >
-            + Create App
-          </button>
-        </div> -->
       </div>
     </div>
     <transition name="slide">
@@ -138,6 +128,7 @@ img {
             >
           </div>
           <div class="card-body">
+            <Errors v-if="errors.length > 0" :errors="errors" />
             <div class="">
               <div class="row form-group">
                 <div class="col-md-4">
@@ -292,11 +283,14 @@ img {
         </div>
       </div>
     </transition>
-    
+
     <div class="row">
       <div class="col-md-12">
         <div class="row">
-          <div class="card col-md-3" style=" margin-top: 3%; margin-left: 2%; margin-right: 2%">
+          <div
+            class="card col-md-3"
+            style="margin-top: 3%; margin-left: 2%; margin-right: 2%"
+          >
             <div class="card-body" style="min-height: 400px">
               <p>
                 <button
@@ -304,10 +298,7 @@ img {
                   style="border: none; margin-top: 7%"
                   @click="toggle"
                 >
-                  <img
-                    src="/images/plus-large.png"
-                    style="width: 100%"
-                  />
+                  <img src="/images/plus-large.png" style="width: 100%" />
                 </button>
               </p>
               <!-- <hr/> -->
@@ -318,7 +309,7 @@ img {
             v-for="app in appList"
             :key="app.did"
             class="card col-md-3"
-            style="margin-left: 2%; margin-right: 2%; margin-top: 3%;"
+            style="margin-left: 2%; margin-right: 2%; margin-top: 3%"
           >
             <div class="card-body" style="min-height: 400px">
               <h4>
@@ -326,10 +317,7 @@ img {
               </h4>
               <hr />
               <p>
-                <img
-                  src="/images/robot.png"
-                  style="size: 100%"
-                />
+                <img src="/images/robot.png" style="size: 100%" />
               </p>
 
               <div style="text-align: left">
@@ -368,10 +356,13 @@ img {
 <script>
 import fetch from "node-fetch";
 import Info from "@/components/Info.vue";
+import Errors from "@/components/Errors.vue";
 import Loading from "vue-loading-overlay";
+import { specialCharCheck } from '../utils/utility';
+import {isWebUri} from 'valid-url';
 export default {
   name: "CreateApplication",
-  components: { Info, Loading },
+  components: { Info, Loading, Errors },
   data() {
     return {
       description:
@@ -389,6 +380,7 @@ export default {
       schemaList: [],
       fullPage: true,
       isLoading: false,
+      errors: [],
       basic: {
         name: "",
         description: "",
@@ -420,24 +412,24 @@ export default {
     });
   },
   methods: {
-    toggle() {
-      this.open = !this.open;
-    },
     notifySuccess(msg) {
-      this.$notify({
+    this.$notify({
         group: "foo",
         title: "Information",
         type: "success",
         text: msg,
-      });
-    },
-    notifyErr(msg) {
-      this.$notify({
+    });
+},
+notifyErr(msg) {
+    this.$notify({
         group: "foo",
         title: "Error",
         type: "error",
         text: msg,
-      });
+    });
+},
+    toggle() {
+      this.open = !this.open;
     },
     async getList(type) {
       let url = "";
@@ -474,7 +466,6 @@ export default {
         }
       } else {
         this.appList = j.message;
-        console.log(this.appList);
       }
     },
     forceFileDownload(data, fileName) {
@@ -491,17 +482,46 @@ export default {
         "hypersign.json"
       );
     },
+    fieldValidations() {
+      this.errors = [];
+      if (this.basic.name == "") this.errors.push("AppName can not be empty");
+      if (this.basic.serviceEndpoint == "")
+        this.errors.push("Service Endpoint Url can not be empty");
+
+      if (this.basic.name != "" && specialCharCheck(this.basic.name))
+        this.errors.push("AppName can not contain special character");
+
+      if (this.basic.serviceEndpoint != "" && !isWebUri(this.basic.serviceEndpoint)){
+        this.errors.push("Invalid service endpoint url");
+      }
+        
+      if (this.basic.logoUrl != "" && !isWebUri(this.basic.logoUrl))
+        this.errors.push("Invalid logo url");
+
+      //TODO: validate number of apps with subcription plan
+      // This check should be from backend: change it later on...
+      const maxAllowApps = this.user.subscriptionDetail.maxAppsCounts
+        ? parseInt(this.user.subscriptionDetail.maxAppsCounts)
+        : 0;
+      if (this.appList.length >= maxAllowApps) {
+        this.errors.push(
+          `Upto ${maxAllowApps} apps are allowed as per your subscribed plan`
+        );
+      }
+
+      if (this.errors.length > 0) return false;
+      else return true;
+    },
+
     async createApp() {
       try {
-
         //TODO: validate fields
-
-        //TODO: validate number of apps with subcription plan
-
-        const maxAllowApps = this.user.subscriptionDetail.maxAppsCounts ?  parseInt(this.user.subscriptionDetail.maxAppsCounts) : 0;
-        if(this.appList.length >=  maxAllowApps){
-          throw new Error(`Maximum of ${maxAllowApps} apps are allowed as per your subscribed plan`)
-        }
+        if (!this.fieldValidations()) {
+          setTimeout(() => {
+            this.errors = []
+          }, 5000)
+          return
+        };
 
 
         this.isLoading = true;
@@ -524,10 +544,8 @@ export default {
           });
           const json = await resp.json();
           if (json.status === 200) {
-            console.log(json.message);
             Object.assign(this.hypersignJson, json.message.hypersignJSON);
             Object.assign(this.hypersignJson.mail, this.advance.mail);
-            console.log(this.hypersignJson);
             this.hypersignJson.mail.name = this.hypersignJson.app.appName;
             this.downloadCredentials();
             this.appList.push(json.message.newApp);
