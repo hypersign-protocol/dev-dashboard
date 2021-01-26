@@ -275,7 +275,9 @@ export default {
             this.schemaList = this.schemaList.filter(
               (x) => x.owner === this.user.id
             );
+            console.log(this.schemaList)
           }
+
         })
         .catch((e) => this.notifyErr(`Error: ${e.message}`));
     },
@@ -361,10 +363,11 @@ export default {
         .then((res) => res.json())
         .then((j) => {
           if (j.status === 200) {
-            this.notifySuccess("Credential successfull created");
+            this.notifySuccess("Schema successfull created");
             this.schemaList.push({
               ...j.message,
             });
+            this.isLoading = false;
           } else {
             this.notifyErr(`Error: ${j.error}`);
           }

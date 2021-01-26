@@ -159,11 +159,15 @@ export default function app() {
             const appList = await app.fetch({
                 owner: user.id
             });
-            user.isSubscribed = subscriptions.length > 0 ? true : false;
-            user.subscriptionDetail = subscriptions[0];
-            user.subscriptionDetail.numberOfApps = appList.length.toString();
-            // Do whatever you want to do with it
-            // Send a message or send to home page
+
+            if(subscriptions.length > 0){
+                user.isSubscribed = true;
+                user.subscriptionDetail = subscriptions[0];
+                user.subscriptionDetail.numberOfApps = appList.length.toString();
+            }else{
+                user.isSubscribed = false;
+            }
+            
             res.status(200).send({ status: 200, message: user, error: null });
         } catch (e) {
             res.status(500).send({ status: 500, message: null, error: e.message });
@@ -303,17 +307,18 @@ export default function app() {
 
     app.post('/hs/api/v2/schema/create', hypersign.authorize.bind(hypersign), validateSchemaCreation, async (req, res) => {
         try {
-            const {schemaData} = req.body;
             const url = `https://ssi.hypermine.in/core/api/schema/create`;
             let headers = {
                 "Content-Type": "application/json",
               };
             const resp = await fetch(url, {
                 method: "POST",
-                body: JSON.stringify(schemaData),
+                body: JSON.stringify(req.body),
                 headers,
               });
             const j =  await resp.json();
+            if(j.status != 200) throw new Error(j.error);
+            console.log(j);
             res.status(200).send({ status: 200, message: j.message, error: null });
         } catch (e) {
             res.status(500).send({ status: 500, message: null, error: e.message });

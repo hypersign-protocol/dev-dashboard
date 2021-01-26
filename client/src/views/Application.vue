@@ -285,12 +285,12 @@ img {
       </div>
     </transition>
 
-    <div class="row">
+    <div class="row" style="margin-top: 0%;">
       <div class="col-md-12">
         <div class="row">
           <div
             class="card col-md-3"
-            style="margin-top: 3%; margin-left: 2%; margin-right: 2%"
+            style="margin-top: 1%; margin-left: 2%; margin-right: 2%"
           >
             <div class="card-body" style="min-height: 400px">
               <p>
@@ -310,7 +310,7 @@ img {
             v-for="app in appList"
             :key="app.did"
             class="card col-md-3"
-            style="margin-left: 2%; margin-right: 2%; margin-top: 3%"
+            style="margin-left: 2%; margin-right: 2%; margin-top: 1%"
           >
             <div class="card-body" style="min-height: 400px">
               <h4>
