@@ -63,7 +63,7 @@
             <h4><b>{{price.planName}}</b></h4>
             <p>{{price.planDescription}}</p>
           </div>
-          <div class="card-body" style="text-align:center">
+          <div class="card-body" v-if="price.planName == 'Tier 1'" style="text-align:center; min-height:280px">
             <p style="font-size:x-large">{{price.planPrice}}</p>
             <p>
               Connect upto <b>{{price.maxAppsCount}}</b> Applications.
@@ -77,6 +77,9 @@
             <p style="text-align:center">
               <button  class="btn btn-lg btn-primary btn-sm" @click="subscribe(price.id)" :disabled="price.isSubscribed">Subscribe</button>
             </p>
+          </div>
+          <div class="card-body" v-if="price.planName != 'Tier 1'" style="padding: 20%;text-align:center; min-height:280px">
+              Coming soon...
           </div>
         </div>
       </div>
@@ -143,7 +146,6 @@ export default {
     };
 
     this.pricingList = await this.fetchData(url, options);
-    console.log(this.pricingList);
 
     url = `${this.$config.studioServer.BASE_URL}hs/api/v2/subscription`;
     options = {
@@ -152,7 +154,6 @@ export default {
     };
 
     this.subscriptionList = await this.fetchData(url, options);
-    console.log(this.subscriptionList);
 
     this.pricingList = this.pricingList.map((x) => {
       if (this.subscriptionList.some((y) => y.planId == x.id)) {
@@ -162,7 +163,6 @@ export default {
       }
       return x;
     });
-    console.log(this.pricingList);
   },
 
   beforeRouteEnter(to, from, next) {
