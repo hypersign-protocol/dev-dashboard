@@ -10,19 +10,19 @@ import { Pricing } from './services/pricing.service';
 import http from 'http';
 import fetch from 'node-fetch';
 
-import  HypersignAuth from 'hypersign-auth-js-sdk'
+import HypersignAuth from 'hypersign-auth-js-sdk'
 
 export default function app() {
     const app = express();
-    const server =  http.createServer(app);
+    const server = http.createServer(app);
     const options = {
         jwtSecret: 'SecureDSecret#12@',
         jwtExpiryTime: 30000,
-        hsNodeUrl: 'https://ssi.hypermine.in/core' , 
+        hsNodeUrl: 'https://ssi.hypermine.in/core',
     };
-    
+
     const hypersign = new HypersignAuth({
-        server, 
+        server,
         baseUrl: 'http://192.168.43.43:4006',
         options
     });
@@ -33,6 +33,71 @@ export default function app() {
     app.use(bodyParser.json());
     app.use(express.static('public'));
 
+
+    async function validateUserSubscription(req, res, next) {
+        try {
+            const userDid = req.body.userData.id;
+            const pricing = new Subscription({});
+            const subscriptions = await pricing.fetch({
+                subscriber: userDid
+            });
+
+            const app = new Application({});
+            const appList = await app.fetch({
+                owner: userDid
+            });
+
+            const maxAppsCounts = parseInt(subscriptions[0]['maxAppsCounts']);
+            const createdAppsCount = appList.length;
+
+            if (createdAppsCount >= maxAppsCounts) {
+                throw new Error(`Upto ${maxAppsCounts} apps are allowed as per your subscribed plan.  Please upgrade your plan.`)
+            }
+
+            next();
+
+        } catch (e) {
+            res.status(500).send({ status: 500, message: null, error: e.message });
+        }
+    }
+
+    async function validateSchemaCreation(req, res, next) {
+        try {
+            const userDid = req.body.userData.id;
+            const pricing = new Subscription({});
+            const subscriptions = await pricing.fetch({
+                subscriber: userDid
+            });
+
+
+            let schemaList = [];
+
+            const url = `https://ssi.hypermine.in/core/api/schema/list`;
+            const resp = await fetch(url)
+            const j = await resp.json()
+
+            if (j.status != 200) throw new Error(j.error);
+
+            schemaList = j.message;
+            if (schemaList && schemaList.length > 0) {
+                schemaList = schemaList.filter(
+                    (x) => x['owner'] === userDid
+                );
+            }
+
+            const maxAppsCounts = parseInt(subscriptions[0]['maxAppsCounts']);
+            const createdSchemaCount = schemaList.length;
+
+            if (createdSchemaCount >= maxAppsCounts) {
+                throw new Error(`Upto ${maxAppsCounts} schemas are allowed as per your subscribed plan. Please upgrade your plan.`)
+            }
+            next();
+
+        } catch (e) {
+            res.status(500).send({ status: 500, message: null, error: e.message });
+        }
+    }
+
     ///////////////////////////
     /// Authentication related
     // Implement /hs/api/v2/auth API 
@@ -42,7 +107,7 @@ export default function app() {
             console.log(dataFromHypersign)
             const userModel = dataFromHypersign.hs_userdata;
 
-            if(!userModel) throw new Error(`Could not fetch usermodel from Hypersign auth`)
+            if (!userModel) throw new Error(`Could not fetch usermodel from Hypersign auth`)
             console.log(userModel)
             /**
              * Example of user model
@@ -53,27 +118,27 @@ export default function app() {
                 },
             */
 
-           const user = new User({
-               fname: userModel.Name,
-               email: userModel.Email,
-               publicKey: userModel.id
-           });
+            const user = new User({
+                fname: userModel.Name,
+                email: userModel.Email,
+                publicKey: userModel.id
+            });
 
-           // Check if this is first time user, Query db using userModel.id
-           const userindbstr = await user.fetch({
-               email: user.email,
-               publicKey: user.publicKey
-           })
-           // If it is, then add this user in database
-           if(!userindbstr || userindbstr === ""){
+            // Check if this is first time user, Query db using userModel.id
+            const userindbstr = await user.fetch({
+                email: user.email,
+                publicKey: user.publicKey
+            })
+            // If it is, then add this user in database
+            if (!userindbstr || userindbstr === "") {
                 console.log(`User ${user.email} is creating.`)
                 await user.create();
-           }else{
-               // Otherwise, do not do anything.
+            } else {
+                // Otherwise, do not do anything.
                 console.log(`User ${user.email} already exists.`)
-           }
+            }
             res.status(200).send({ status: 200, message: "Success", error: null });
-   
+
         } catch (e) {
 
             console.log(e)
@@ -86,7 +151,7 @@ export default function app() {
     app.post('/protected', hypersign.authorize.bind(hypersign), async (req, res) => {
         try {
             const user = req.body.userData;
-            const pricing  = new Subscription({});
+            const pricing = new Subscription({});
             const subscriptions = await pricing.fetch({
                 subscriber: user.id
             });
@@ -94,7 +159,7 @@ export default function app() {
             const appList = await app.fetch({
                 owner: user.id
             });
-            user.isSubscribed = subscriptions.length > 0 ? true: false;
+            user.isSubscribed = subscriptions.length > 0 ? true : false;
             user.subscriptionDetail = subscriptions[0];
             user.subscriptionDetail.numberOfApps = appList.length.toString();
             // Do whatever you want to do with it
@@ -111,22 +176,22 @@ export default function app() {
     ///////////////////////// 
     ///Application related
     app.get('/hs/api/v2/app', hypersign.authorize.bind(hypersign), async (req, res) => {
-        try{
-            const {userData} = req.body;
+        try {
+            const { userData } = req.body;
             const app = new Application({});
             const appList = await app.fetch({
                 owner: userData.id
             });
             res.status(200).send({ status: 200, message: appList, error: null });
-        }catch(e){
+        } catch (e) {
             res.status(500).send({ status: 500, message: null, error: e.message });
         }
     });
 
-    app.post('/hs/api/v2/app/create', hypersign.authorize.bind(hypersign), async (req, res) => {
+    app.post('/hs/api/v2/app/create', hypersign.authorize.bind(hypersign), validateUserSubscription, async (req, res) => {
         try {
-            const {userData} = req.body;
-            
+            const { userData } = req.body;
+
             const appBasicConfig = req.body.basic;
             const appAdvConfig = req.body.advance;
             const hypersignJSON = {
@@ -149,7 +214,7 @@ export default function app() {
                 }
             }
 
-            Object.assign(hypersignJSON , appAdvConfig);
+            Object.assign(hypersignJSON, appAdvConfig);
             Object.assign(hypersignJSON.app, appBasicConfig);
             hypersignJSON.app.owner = userData.id;
             console.log(hypersignJSON)
@@ -157,13 +222,13 @@ export default function app() {
             // step1: Make a call to core to generate keypair and register did
             const url = `https://ssi.hypermine.in/core/api/did/register?user=${JSON.stringify(hypersignJSON.app)}`;
             console.log(url)
-            const resp =  await fetch(url)
-            const json =  await resp.json();
+            const resp = await fetch(url)
+            const json = await resp.json();
             console.log(json.message.did)
             Object.assign(hypersignJSON.keys, json.message.keys);
             hypersignJSON.app.did = json.message.did;
-            
-            
+
+
             // step2: Store app realated configuration in db
             const app = new Application({
                 name: hypersignJSON.app.name,
@@ -174,10 +239,10 @@ export default function app() {
             });
             const newApp = await app.create();
 
-            
+
 
             // step3: Generate hypersign.json data and return
-            res.status(200).send({ status: 200, message: {hypersignJSON, newApp}, error: null });
+            res.status(200).send({ status: 200, message: { hypersignJSON, newApp }, error: null });
         } catch (e) {
             res.status(500).send({ status: 500, message: null, error: e.message });
         }
@@ -190,13 +255,13 @@ export default function app() {
     app.post('/hs/api/v2/price/create', async (req, res) => {
         const plan = req.body;
         plan.offerings = JSON.stringify(plan.offerings);
-        const pricing  = new Pricing({...plan});
+        const pricing = new Pricing({ ...plan });
         const price = await pricing.create();
         res.status(200).send({ status: 200, message: price, error: null });
     })
 
-    app.get('/hs/api/v2/price', async (req, res) => { 
-        const pricing  = new Pricing({});
+    app.get('/hs/api/v2/price', async (req, res) => {
+        const pricing = new Pricing({});
         let pricings = await pricing.fetch();
         // pricings = pricings.map(x => {
         //     const obj =  Object.assign({}, x);
@@ -211,21 +276,21 @@ export default function app() {
     ///////////////////////// 
     ///Subscription related
     app.post('/hs/api/v2/subscription/create', hypersign.authorize.bind(hypersign), async (req, res) => {
-        try{
+        try {
             const subscription = req.body;
-            if(!subscription || !subscription.planId) throw new Error('PlanId is not passed');
+            if (!subscription || !subscription.planId) throw new Error('PlanId is not passed');
             subscription.subscriber = req.body.userData.id;
-            const subsObject  = new Subscription({...subscription});
+            const subsObject = new Subscription({ ...subscription });
             const newSubscription = await subsObject.create();
             res.status(200).send({ status: 200, message: newSubscription, error: null });
-        }catch(e){
+        } catch (e) {
             res.status(500).send({ status: 500, message: null, error: e.message });
         }
-        
+
     })
 
-    app.get('/hs/api/v2/subscription', hypersign.authorize.bind(hypersign), async (req, res) => { 
-        const pricing  = new Subscription({});
+    app.get('/hs/api/v2/subscription', hypersign.authorize.bind(hypersign), async (req, res) => {
+        const pricing = new Subscription({});
         const subscriptions = await pricing.fetch({
             subscriber: req.body.userData.id
         });
@@ -234,7 +299,27 @@ export default function app() {
     ///
     ///////////////////////////
 
-    
+
+
+    app.post('/hs/api/v2/schema/create', hypersign.authorize.bind(hypersign), validateSchemaCreation, async (req, res) => {
+        try {
+            const {schemaData} = req.body;
+            const url = `https://ssi.hypermine.in/core/api/schema/create`;
+            let headers = {
+                "Content-Type": "application/json",
+              };
+            const resp = await fetch(url, {
+                method: "POST",
+                body: JSON.stringify(schemaData),
+                headers,
+              });
+            const j =  await resp.json();
+            res.status(200).send({ status: 200, message: j.message, error: null });
+        } catch (e) {
+            res.status(500).send({ status: 500, message: null, error: e.message });
+        }
+
+    })
 
     server.listen(port, () => logger.info(`The server is running on port ${port}`));
 

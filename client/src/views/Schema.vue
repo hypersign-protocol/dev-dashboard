@@ -230,7 +230,6 @@ export default {
       attributeValues: {},
       authToken: localStorage.getItem("authToken"),
       selectOptions: [{ value: null, text: "Please select a schema" }],
-      schemaMap: {},
       schemaList: [],
       credentialDescription: "",
       fullPage: true,
@@ -280,7 +279,7 @@ export default {
         })
         .catch((e) => this.notifyErr(`Error: ${e.message}`));
     },
-    fetchData(url, option) {
+    fetchData(url) {
       fetch(url)
         .then((res) => res.json())
         .then((j) => {
@@ -336,11 +335,12 @@ export default {
             this.errors = []
           }, 5000)
           return
-      };
+      }
 
       this.isLoading = true;
 
-      const url = `${this.$config.nodeServer.BASE_URL}${this.$config.nodeServer.SCHEMA_CREATE_EP}`;
+      const url = `${this.$config.studioServer.BASE_URL}hs/api/v2/schema/create`;
+      console.log(url)
       const schemaData = {
         name: this.credentialName,
         owner: this.user.id,
@@ -349,7 +349,10 @@ export default {
       };
       let headers = {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${this.authToken}`,
       };
+
+      console.log(headers)
       fetch(url, {
         method: "POST",
         body: JSON.stringify(schemaData),
@@ -359,20 +362,19 @@ export default {
         .then((j) => {
           if (j.status === 200) {
             this.notifySuccess("Credential successfull created");
-            // this.credentialName = j.message.credentialName;
             this.schemaList.push({
               ...j.message,
             });
-            this.schemaMap[j.message.id] = this.attributes;
-            this.isLoading = false;
           } else {
-            this.isLoading = false;
             this.notifyErr(`Error: ${j.error}`);
           }
+          this.isLoading = false;
+        }).catch(e => {
+          this.isLoading = false;
+          this.notifyErr(`Error: ${e.message}`);
         });
 
         this.clearFields()
-      
 
     },
   },

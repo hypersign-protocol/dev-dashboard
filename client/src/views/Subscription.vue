@@ -112,9 +112,7 @@
 
 <script>
 import fetch from "node-fetch";
-import conf from "../config";
 import Loading from "vue-loading-overlay";
-const { hypersignSDK } = conf;
 import Info from "@/components/Info.vue";
 export default {
   name: "Presentation",

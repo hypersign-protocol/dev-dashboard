@@ -158,7 +158,7 @@ img {
                   />
                 </div>
               </div>
-              <div class="row form-group">
+              <!-- <div class="row form-group">
                 <div class="col-md-4">
                   <label>Logo url:</label>
                 </div>
@@ -171,7 +171,7 @@ img {
                     class="form-control"
                   />
                 </div>
-              </div>
+              </div> -->
               <div class="row form-group">
                 <div
                   class="col-md-12"
@@ -358,8 +358,8 @@ import fetch from "node-fetch";
 import Info from "@/components/Info.vue";
 import Errors from "@/components/Errors.vue";
 import Loading from "vue-loading-overlay";
-import { specialCharCheck } from '../utils/utility';
-import {isWebUri} from 'valid-url';
+import { specialCharCheck } from "../utils/utility";
+import { isWebUri } from "valid-url";
 export default {
   name: "CreateApplication",
   components: { Info, Loading, Errors },
@@ -413,21 +413,21 @@ export default {
   },
   methods: {
     notifySuccess(msg) {
-    this.$notify({
+      this.$notify({
         group: "foo",
         title: "Information",
         type: "success",
         text: msg,
-    });
-},
-notifyErr(msg) {
-    this.$notify({
+      });
+    },
+    notifyErr(msg) {
+      this.$notify({
         group: "foo",
         title: "Error",
         type: "error",
         text: msg,
-    });
-},
+      });
+    },
     toggle() {
       this.open = !this.open;
     },
@@ -491,41 +491,43 @@ notifyErr(msg) {
       if (this.basic.name != "" && specialCharCheck(this.basic.name))
         this.errors.push("AppName can not contain special character");
 
-      if (this.basic.serviceEndpoint != "" && !isWebUri(this.basic.serviceEndpoint)){
+      if (
+        this.basic.serviceEndpoint != "" &&
+        !isWebUri(this.basic.serviceEndpoint)
+      ) {
         this.errors.push("Invalid service endpoint url");
       }
-        
+
       if (this.basic.logoUrl != "" && !isWebUri(this.basic.logoUrl))
         this.errors.push("Invalid logo url");
 
       //TODO: validate number of apps with subcription plan
       // This check should be from backend: change it later on...
-      const maxAllowApps = this.user.subscriptionDetail.maxAppsCounts
-        ? parseInt(this.user.subscriptionDetail.maxAppsCounts)
-        : 0;
-      if (this.appList.length >= maxAllowApps) {
-        this.errors.push(
-          `Upto ${maxAllowApps} apps are allowed as per your subscribed plan`
-        );
-      }
+      // const maxAllowApps = this.user.subscriptionDetail.maxAppsCounts
+      //   ? parseInt(this.user.subscriptionDetail.maxAppsCounts)
+      //   : 0;
+      // if (this.appList.length >= maxAllowApps) {
+      //   this.errors.push(
+      //     `Upto ${maxAllowApps} apps are allowed as per your subscribed plan`
+      //   );
+      // }
 
       if (this.errors.length > 0) return false;
       else return true;
     },
 
     async createApp() {
-      try {
-        //TODO: validate fields
-        if (!this.fieldValidations()) {
-          setTimeout(() => {
-            this.errors = []
-          }, 5000)
-          return
-        };
+      //TODO: validate fields
+      if (!this.fieldValidations()) {
+        setTimeout(() => {
+          this.errors = [];
+        }, 5000);
+        return;
+      }
 
-
-        this.isLoading = true;
-        setTimeout(async () => {
+      this.isLoading = true;
+      setTimeout(async () => {
+        try {
           const createAppUrl = `${this.$config.studioServer.BASE_URL}hs/api/v2/app/create`;
           const data = {
             basic: {},
@@ -552,28 +554,27 @@ notifyErr(msg) {
 
             this.notifySuccess("App is created");
             this.isLoading = false;
-
             // TODO clear all fields.
           } else {
             this.isLoading = false;
             throw new Error(`Error: ${json.error}`);
           }
-        }, 2000);
-      } catch (e) {
-        this.isLoading = false;
-        this.notifyErr(`Error: ${e.message}`);
-      }
-      this.cleanFields()
+        } catch (e) {
+          this.isLoading = false;
+          this.notifyErr(`Error: ${e.message}`);
+        }
+        this.cleanFields();
+      }, 2000);
     },
-    cleanFields(){
-      Object.assign(this.basic,{
+    cleanFields() {
+      Object.assign(this.basic, {
         name: "",
         description: "",
         serviceEndpoint: "",
         did: "",
         logoUrl: "",
-      })
-      Object.assign(this.advance , {
+      });
+      Object.assign(this.advance, {
         schemaId: "",
         mail: {
           host: "",
@@ -581,11 +582,10 @@ notifyErr(msg) {
           user: "",
           pass: "",
         },
-      })
+      });
       this.toggle();
       this.selected = null;
-    }
-
+    },
   },
 };
 </script>
