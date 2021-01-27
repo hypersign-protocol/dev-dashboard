@@ -502,17 +502,7 @@ export default {
       if (this.basic.logoUrl != "" && !isWebUri(this.basic.logoUrl))
         this.errors.push("Invalid logo url");
 
-      //TODO: validate number of apps with subcription plan
-      // This check should be from backend: change it later on...
-      // const maxAllowApps = this.user.subscriptionDetail.maxAppsCounts
-      //   ? parseInt(this.user.subscriptionDetail.maxAppsCounts)
-      //   : 0;
-      // if (this.appList.length >= maxAllowApps) {
-      //   this.errors.push(
-      //     `Upto ${maxAllowApps} apps are allowed as per your subscribed plan`
-      //   );
-      // }
-
+      
       if (this.errors.length > 0) return false;
       else return true;
     },
@@ -548,8 +538,8 @@ export default {
           const json = await resp.json();
           if (json.status === 200) {
             Object.assign(this.hypersignJson, json.message.hypersignJSON);
-            Object.assign(this.hypersignJson.mail, this.advance.mail);
-            this.hypersignJson.mail.name = this.hypersignJson.app.appName;
+            Object.assign(this.hypersignJson.mail, this.advance.mail);            
+            this.hypersignJson.mail.name = this.basic.name;
             this.downloadCredentials();
             this.appList.push(json.message.newApp);
 

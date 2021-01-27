@@ -4,6 +4,7 @@
 npm i
 npm run build
 npm run newdb
+npm run bootstrap
 npm run start
 ```
 

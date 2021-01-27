@@ -55,10 +55,11 @@ const jwtSecret = process.env.JWT_SECRET || 'secretKey'
 const jwtExpiryInMilli = 240000
 
 const nodeServer = {
-    baseURl: process.env.NODE_SERVER_BASE_URL || "http://localhost:5000/",
-    didCreateEp: process.env.NODE_SERVER_DID_CREATE_EP || "api/did/create_tmp",
+    baseURl: process.env.NODE_SERVER_BASE_URL || "https://ssi.hypermine.in/core/",
+    didCreateEp: process.env.NODE_SERVER_DID_CREATE_EP || "api/did/create",
     schemaCreateEp: process.env.NODE_SERVER_SCHEMA_CREATE_EP || "api/schema/create",
-    schemaGetEp: process.env.NODE_SERVER_SCHEMA_GET_EP || "api/schema/get"
+    schemaGetEp: process.env.NODE_SERVER_SCHEMA_GET_EP || "api/schema/get",
+    schemaListEp: process.env.NODE_SERVER_SCHEMA_LIST_EP || "api/schema/list",
 }
 
 const mail = {
@@ -77,11 +78,14 @@ const hypersignSDK = {
 }
 
 const hs_schema = {
-    APP_NAME: process.env.SCHEMA_NAME || 'Superhero',
-    ATTRIBUTES: process.env.SCEHMA_ATTRIBUTES || ["Name", "Email"],
-    DESCRIPTION: process.env.SCEHMA_DESCRIPTION || 'Superhero Authentication Credential'
+    APP_NAME: process.env.SCHEMA_NAME || 'Hypersign App Credential',
+    ATTRIBUTES: process.env.SCEHMA_ATTRIBUTES || ["name",  "did",  "owner",  "schemaId",  "serviceEp", "subscriptionId", "planId", "planName"],
+    DESCRIPTION: process.env.SCEHMA_DESCRIPTION || 'Hypersign App Credential'
 }
 
+        
+
+        
 const challengeExpTime = 5 // time at which session challenge will expire (in minutes)
 
 
