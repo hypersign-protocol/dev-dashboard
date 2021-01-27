@@ -115,6 +115,15 @@ img {
           :can-cancel="true"
           :is-full-page="fullPage"
         ></loading>
+        <div>
+          <button
+            class="btn btn-outline-primary btn-sm"
+            style="float: left"
+            @click="toggle"
+          >
+            + Create App
+          </button>
+        </div>
       </div>
     </div>
     <transition name="slide">
@@ -202,7 +211,7 @@ img {
                             :options="selectOptions"
                             size="md"
                             class="mt-3"
-                            style="margin-top: 0rem !important;"
+                            style="margin-top: 0rem !important"
                           ></b-form-select>
                         </div>
                       </div>
@@ -286,10 +295,10 @@ img {
       </div>
     </transition>
 
-    <div class="row" style="margin-top: 0%;">
+    <div class="row" style="margin-top: 1%">
       <div class="col-md-12">
         <div class="row">
-          <div
+          <!-- <div
             class="card col-md-3"
             style="margin-top: 1%; margin-left: 2%; margin-right: 2%"
           >
@@ -303,62 +312,76 @@ img {
                   <img src="/images/plus-large.png" style="width: 100%" />
                 </button>
               </p>
-              <!-- <hr/> -->
               <h5 style="color: gray"><b>Create App</b></h5>
             </div>
-          </div>
+          </div> -->
           <div
             v-for="app in appList"
             :key="app.did"
-            class="card col-md-3"
-            style="margin-left: 2%; margin-right: 2%; margin-top: 1%"
+            class="card col-md-5"
+            style="margin-left:1%"
           >
-            <div class="card-body" style="min-height: 400px">
-              <h4>
-                <b>{{ app.name }}</b>
-              </h4>
-              <hr />
-              <p>
-                <img src="/images/robot.png" style="size: 100%" />
-              </p>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-12">
+                  <b>{{ app.name }}</b>
+                  <hr />
+                </div>
+              </div>
+              <div class="row" style="min-height: 67%;">
+                <div class="col-md-4">
+                   <img
+                      src="/images/robot.png"
+                      style="width: 150px; height: 150px"
+                    />
+                </div>
 
-              <div style="text-align: left; font-size: smaller;color: gray;">
-                <ul style="list-style-type: none;padding: 0;margin: 0;">
-                  <li>
-                    <label>App DID</label>
-                  </li>
-                  <li>
-                    <label><a
-                    v-bind:href="
-                      'https://ssi.hypermine.in/core/api/did/resolve/' + app.did
-                    "
-                    target="_blank"
-                    >{{ app.did }}</a
-                  ></label>
-                  </li>
-                  <li v-if="app.schemaId">
-                    <label>Schema</label>
-                  </li> 
-                  <li v-if="app.schemaId">
-                    <label><a
-                    v-bind:href="
-                      'https://ssi.hypermine.in/core/api/schema/get/' +
-                      app.schemaId
-                    "
-                    target="_blank"
-                    >{{ app.schemaId }}</a
-                  ></label>
-                  </li>  
-                  <li v-if="app.serviceEp">
-                    <label>Service Ep</label>
-                  </li> 
-                  <li v-if="app.serviceEp">
-                    <label><a href="#">{{ app.serviceEp }}</a></label>
-                  </li>  
-                </ul>
-                
+                <div
+                  class="col-md-8"
+                  style="text-align: left; font-size: small; color: gray"
+                >
+                  <ul style="list-style-type: none; padding: 0; margin: 0">
+                    <li>
+                      <label>APP DID</label>
+                    </li>
+                    <li>
+                      <label
+                        ><a
+                          v-bind:href="
+                            'https://ssi.hypermine.in/core/api/did/resolve/' +
+                            app.did
+                          "
+                          target="_blank"
+                          >{{ app.did }}</a
+                        ></label
+                      >
+                    </li>
+                    <li v-if="app.schemaId">
+                      <label>SCHEMA</label>
+                    </li>
+                    <li v-if="app.schemaId">
+                      <label
+                        ><a
+                          v-bind:href="
+                            'https://ssi.hypermine.in/core/api/schema/get/' +
+                            app.schemaId
+                          "
+                          target="_blank"
+                          >{{ app.schemaId }}</a
+                        ></label
+                      >
+                    </li>
+                    <li v-if="app.serviceEp">
+                      <label>SERVICE ENDPOINT</label>
+                    </li>
+                    <li v-if="app.serviceEp">
+                      <label
+                        ><a href="#">{{ app.serviceEp }}</a></label
+                      >
+                    </li>
+                  </ul>
 
-                <!-- <p style="font-size: small; color: gray">
+                  <!-- <p style="font-size: small; color: gray">
                   <a
                     v-bind:href="
                       'https://ssi.hypermine.in/core/api/did/resolve/' + app.did
@@ -381,6 +404,15 @@ img {
                 <p v-if="app.serviceEp">
                   Service Ep: <a href="#">{{ app.serviceEp }}</a>
                 </p> -->
+                </div>
+
+                
+              </div>
+              <div class="row" >
+                <div class="col-md-2"></div>
+                <div class="col-md-10" style="text-align: right;color: gray;">
+                  <i title="Feature coming soon..." class="fas fa-edit"></i> | <i title="Feature coming soon..." class="fas fa-download"></i> | <i title="Feature coming soon..." class="fas fa-trash"></i>
+                </div>
               </div>
             </div>
           </div>
@@ -538,7 +570,6 @@ export default {
       if (this.basic.logoUrl != "" && !isWebUri(this.basic.logoUrl))
         this.errors.push("Invalid logo url");
 
-      
       if (this.errors.length > 0) return false;
       else return true;
     },
@@ -574,7 +605,7 @@ export default {
           const json = await resp.json();
           if (json.status === 200) {
             Object.assign(this.hypersignJson, json.message.hypersignJSON);
-            Object.assign(this.hypersignJson.mail, this.advance.mail);            
+            Object.assign(this.hypersignJson.mail, this.advance.mail);
             this.hypersignJson.mail.name = this.basic.name;
             this.downloadCredentials();
             this.appList.push(json.message.newApp);
