@@ -1,12 +1,14 @@
 <style scoped>
 .error {
-  color: white;
-  background: rgba(255, 89, 67, 0.78);
+  color: rgba(251, 65, 40, 0.78);
+  /* background: rgba(255, 89, 67, 0.78); */
+  border: 1px solid rgba(255, 89, 67, 0.78);
   padding: 10px;
   text-align: left;
   font-size: inherit;
   border-radius: 3px;
   margin-bottom: 2%;
+  font-size:medium;
 }
 </style>
 
