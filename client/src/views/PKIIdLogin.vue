@@ -44,11 +44,8 @@ h5 span {
 <template>
   <!-- <div class="row" style="margin-left: 35%;"> -->
   <div class="row" style="align-content: center;">
-    <div class="col-md-7" style="font-size: small;color:grey;" hidden>
-      Can we put one big image here?
-    </div>
-    <div class="col-md-4"></div>
-    <div class="col-md-3" style="font-size: small;color:grey;">
+    <!-- <div class="col-md-4"></div> -->
+    <div class="col-md-3" style="font-size: small;color:grey;margin-left: 35%;">
       <form action="#">
         <b-card no-body style="padding: 12%; border-top: 4px solid #00f9;">
           <loading :active.sync="isLoading" :can-cancel="true" :is-full-page="fullPage"></loading>
@@ -74,7 +71,7 @@ h5 span {
         </b-card>
       </form>
     </div>
-    <div class="col-md-4"></div>
+    <!-- <div class="col-md-4"></div> -->
     
   </div>
 </template>

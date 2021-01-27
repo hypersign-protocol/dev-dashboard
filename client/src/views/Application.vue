@@ -202,6 +202,7 @@ img {
                             :options="selectOptions"
                             size="md"
                             class="mt-3"
+                            style="margin-top: 0rem !important;"
                           ></b-form-select>
                         </div>
                       </div>
@@ -321,8 +322,43 @@ img {
                 <img src="/images/robot.png" style="size: 100%" />
               </p>
 
-              <div style="text-align: left">
-                <p style="font-size: small; color: gray">
+              <div style="text-align: left; font-size: smaller;color: gray;">
+                <ul style="list-style-type: none;padding: 0;margin: 0;">
+                  <li>
+                    <label>App DID</label>
+                  </li>
+                  <li>
+                    <label><a
+                    v-bind:href="
+                      'https://ssi.hypermine.in/core/api/did/resolve/' + app.did
+                    "
+                    target="_blank"
+                    >{{ app.did }}</a
+                  ></label>
+                  </li>
+                  <li v-if="app.schemaId">
+                    <label>Schema</label>
+                  </li> 
+                  <li v-if="app.schemaId">
+                    <label><a
+                    v-bind:href="
+                      'https://ssi.hypermine.in/core/api/schema/get/' +
+                      app.schemaId
+                    "
+                    target="_blank"
+                    >{{ app.schemaId }}</a
+                  ></label>
+                  </li>  
+                  <li v-if="app.serviceEp">
+                    <label>Service Ep</label>
+                  </li> 
+                  <li v-if="app.serviceEp">
+                    <label><a href="#">{{ app.serviceEp }}</a></label>
+                  </li>  
+                </ul>
+                
+
+                <!-- <p style="font-size: small; color: gray">
                   <a
                     v-bind:href="
                       'https://ssi.hypermine.in/core/api/did/resolve/' + app.did
@@ -332,7 +368,7 @@ img {
                   >
                 </p>
                 <p v-if="app.schemaId">
-                  Schema:
+                  <label>Schema:</label>
                   <a
                     v-bind:href="
                       'https://ssi.hypermine.in/core/api/schema/get/' +
@@ -343,8 +379,8 @@ img {
                   >
                 </p>
                 <p v-if="app.serviceEp">
-                  Service Endpoint: <a href="#">{{ app.serviceEp }}</a>
-                </p>
+                  Service Ep: <a href="#">{{ app.serviceEp }}</a>
+                </p> -->
               </div>
             </div>
           </div>
