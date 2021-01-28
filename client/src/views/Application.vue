@@ -92,6 +92,7 @@
   transition: 0.3s;
   width: 100%;
   border-radius: 5px;
+  padding: 0px;
 }
 
 .card:hover {
@@ -118,10 +119,10 @@ img {
         <div>
           <button
             class="btn btn-outline-primary btn-sm"
-            style="float: left"
+            style="float: right"
             @click="toggle"
           >
-            + Create App
+            <i class="fas fa-plus"></i> Create App
           </button>
         </div>
       </div>
@@ -130,12 +131,11 @@ img {
       <div class="slidein" v-if="open">
         <div class="card" style="text-align: left; min-height: 100%">
           <div class="card-header" style="padding: 2%">
-            <b-button variant="link" style="float: left" @click="toggle"
+            <!-- <b-button variant="link" style="float: left" @click="toggle"
               >x</b-button
-            >
-            <b-button v-b-toggle.collapse-1 variant="link"
-              >Application Configurations</b-button
-            >
+            > -->
+            <a href="#" @click="toggle" style="float: left"><i class="fas fa-times"></i></a>
+            <label style="margin-left: 2%">Application Configurations</label>
           </div>
           <div class="card-body">
             <Errors v-if="errors.length > 0" :errors="errors" />
@@ -196,7 +196,7 @@ img {
                       style="padding-left: 0px"
                       v-b-toggle.collapse-2
                       variant="link"
-                      >ADVANCE CONFIGURATION (OPTIONAL)</b-button
+                      >Advance Configurations (optional)</b-button
                     >
                   </div>
                   <b-collapse id="collapse-2">
@@ -321,14 +321,17 @@ img {
             class="card col-md-5"
             style="margin-left:1%"
           >
+          <div class="card-header" style="padding: 2%;">
+            <b>{{ app.name }}</b>
+          </div>
             <div class="card-body">
-              <div class="row">
+              <!-- <div class="row">
                 <div class="col-md-12">
                   <b>{{ app.name }}</b>
                   <hr />
                 </div>
-              </div>
-              <div class="row" style="min-height: 67%;">
+              </div> -->
+              <div class="row" style="min-height: 163px">
                 <div class="col-md-4">
                    <img
                       src="/images/robot.png"
