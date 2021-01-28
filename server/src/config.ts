@@ -56,7 +56,7 @@ const jwtExpiryInMilli = 240000
 
 const nodeServer = {
     baseURl: process.env.NODE_SERVER_BASE_URL || "https://ssi.hypermine.in/core/",
-    didCreateEp: process.env.NODE_SERVER_DID_CREATE_EP || "api/did/create",
+    didCreateEp: process.env.NODE_SERVER_DID_CREATE_EP || "api/did/register",
     schemaCreateEp: process.env.NODE_SERVER_SCHEMA_CREATE_EP || "api/schema/create",
     schemaGetEp: process.env.NODE_SERVER_SCHEMA_GET_EP || "api/schema/get",
     schemaListEp: process.env.NODE_SERVER_SCHEMA_LIST_EP || "api/schema/list",

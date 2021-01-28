@@ -13,13 +13,15 @@ export class Application implements IApplication{
     schemaId: string;
     serviceEp: string;
     dbSerice: DBService;
-    constructor({ name= "", did = "", owner = "", schemaId = "", serviceEp = "", }){
+    authCounts: string;
+    constructor({ name= "", did = "", owner = "", schemaId = "", serviceEp = "", authCounts = "" }){
         this.id = did;
         this.name = name;
         this.did = did;
         this.owner = owner;
         this.schemaId = schemaId;
         this.serviceEp = serviceEp;
+        this.authCounts = authCounts;
         
         this.dbSerice = new DBService();
     }
@@ -76,10 +78,40 @@ private addDays(date, days) {
         return signedCredential
     }
 
+    async verifyPresentation(vpObj, challenge): Promise<boolean> {
+        if (!vpObj) throw new Error('presentation is null')
+        if (!challenge) throw new Error('challenge is null')
+        const vc = vpObj.verifiableCredential[0];
+        const isVerified = await hypersignSDK.credential.verifyPresentation({
+            presentation: vpObj,
+            challenge: challenge,
+            issuerDid: vc.proof.verificationMethod,
+            holderDid: vpObj.proof.verificationMethod
+        });
+        return isVerified.verified;
+    }
+
+
     async fetch(obj = {}){    
         if(Object.keys(obj).length === 0){
             obj = {owner: this.owner}
         }
         return await this.dbSerice.getAll(SchemaType.Application, obj);
+    }
+
+    async fetchOne(obj = {}): Promise<IApplication>{    
+        if(Object.keys(obj).length === 0){
+            obj = {id: this.did}
+        }
+        return await this.dbSerice.getOne(SchemaType.Application, obj);
+    }
+
+    async update(params = {}, where = {}){
+
+        if(Object.keys(where).length === 0){
+            where = {id: this.did}
+        }
+
+        return await this.dbSerice.update(SchemaType.Application, params, where)
     }
 }

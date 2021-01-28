@@ -66,4 +66,20 @@ export class Subscription implements ISubscription{
         }
         return await this.dbSerice.getAll(SchemaType.Subscription, obj);
     }
+
+    async update(params = {}, where = {}){
+
+        if(Object.keys(where).length === 0){
+            where = {id: this.id}
+        }
+
+        return await this.dbSerice.update(SchemaType.Subscription, params, where)
+    }
+
+    async fetchOne(obj = {}): Promise<ISubscription>{    
+        if(Object.keys(obj).length === 0){
+            obj = {subscriber: this.subscriber}
+        }
+        return await this.dbSerice.getOne(SchemaType.Subscription, obj);
+    }
 }

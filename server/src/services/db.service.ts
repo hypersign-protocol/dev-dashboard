@@ -2,7 +2,7 @@ import { db, logger } from '../config'
 
 const FieldMap = Object.freeze({
     User: ["id","fname","lname","phoneNumber","username","password","email","publicKey","privateKey","hash","birthdate","jobTitle", "isActive"],
-    Application: ["id","name","did","owner", "schemaId", "serviceEp"],
+    Application: ["id","name","did","owner", "schemaId", "serviceEp", "authCounts"],
     VerifiableCredential: ["id",    "subject",    "issuer",    "schemaId",    "dataHash"],
     Pricing: ["id","planName","planId","planPrice","planDescription","offerings", "maxAppsCount",    "maxAuthCount",    "supportType" ],
     Subscription: ["id",    "planId",    "subscriber", "subscriptionDate",    "planName",    "authCount",    "maxAuthCount",    "numberOfApps",    "maxAppsCounts"]
@@ -102,7 +102,7 @@ export class DBService{
     createTable (type: SchemaType): Promise<string>{
         return new Promise((resolve, reject)=> {
             const query = this.getQuery(QueryType.CreateTable, type);
-            logger.debug(`Method: createTable: Before creating  ${SchemaType[type]} table: query = ${query}`);
+            console.log(`Method: createTable: Before creating  ${SchemaType[type]} table: query = ${query}`);
             db.run(query, (err, res) => {
                 if(err) {
                     reject(err)

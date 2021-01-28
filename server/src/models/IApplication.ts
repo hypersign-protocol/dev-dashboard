@@ -5,4 +5,5 @@ export default interface IApplication{
     owner: string;
     schemaId: string;
     serviceEp: string;
+    authCounts: string;
 }
