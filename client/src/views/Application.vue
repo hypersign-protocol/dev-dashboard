@@ -319,7 +319,7 @@ img {
             v-for="app in appList"
             :key="app.did"
             class="card col-md-5"
-            style="margin-left:1%"
+            style="margin-right:2%; margin-bottom:2%"
           >
           <div class="card-header" style="padding: 2%;">
             <b>{{ app.name }}</b>
