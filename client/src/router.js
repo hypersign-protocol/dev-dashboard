@@ -69,8 +69,8 @@ router.beforeEach((to, from, next) => {
         const authToken = localStorage.getItem('authToken');
         if (authToken) {
             const url = `${config.studioServer.BASE_URL}protected`
-            console.log(url)
-            console.log('...............')
+                //console.log(url)
+                //console.log('...............')
             fetch(url, {
                     headers: {
                         "Authorization": `Bearer ${authToken}`
@@ -78,15 +78,15 @@ router.beforeEach((to, from, next) => {
                     method: "POST"
                 }).then(res => res.json())
                 .then(json => {
-                    console.log('...............')
-                    console.log(json.message)
+                    //console.log('...............')
+                    //console.log(json.message)
                     if (json.status == 403) {
                         next({
                             path: '/studio/login',
                             params: { nextUrl: to.fullPath }
                         })
                     } else {
-                        console.log(json.message)
+                        //console.log(json.message)
                         localStorage.setItem("user", JSON.stringify(json.message));
                         /studio/ / next()
                         if (!json.message.isSubscribed) {

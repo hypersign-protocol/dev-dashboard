@@ -275,7 +275,7 @@ export default {
             this.schemaList = this.schemaList.filter(
               (x) => x.owner === this.user.id
             );
-            console.log(this.schemaList)
+            //console.log(this.schemaList)
           }
 
         })
@@ -342,7 +342,7 @@ export default {
       this.isLoading = true;
 
       const url = `${this.$config.studioServer.BASE_URL}hs/api/v2/schema/create`;
-      console.log(url)
+      //console.log(url)
       const schemaData = {
         name: this.credentialName,
         owner: this.user.id,
@@ -354,7 +354,7 @@ export default {
         "Authorization": `Bearer ${this.authToken}`,
       };
 
-      console.log(headers)
+      //console.log(headers)
       fetch(url, {
         method: "POST",
         body: JSON.stringify(schemaData),
