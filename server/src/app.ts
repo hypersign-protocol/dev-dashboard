@@ -348,13 +348,13 @@ export default function app() {
             // chcek if there is token in the query
         const { apiAuthToken } = req.query;
         logger.debug('verify:: apiAuthToken =  ', apiAuthToken)
-        const jwtSecret ='jwtSecret123';
+        
         
         if(apiAuthToken){
             logger.debug('verify:: Inside  apiAuthToken if');
 
             // verify JWT authAPIToken
-            jwt.verify(apiAuthToken, jwtSecret, async (err, data) => {
+            jwt.verify(apiAuthToken, options.jwtSecret, async (err, data) => {
                 if(err) res.status(403).send({ status: 403, message: null, error: 'Unauthorized: Invalid token' })
                 
                 logger.debug('verify:: before updateAuthCount ');
@@ -386,8 +386,8 @@ export default function app() {
             // Generate JWT authAPIToken and send back
             jwt.sign(
                 credentialSubject,
-                jwtSecret,
-                { expiresIn: 120000 },
+                options.jwtSecret,
+                { expiresIn: options.jwtExpiryTime },
                 async (err, token) => {
                     if (err) throw new Error(err);
                     res.status(200).send({ status: 200, message: token, error: null });
