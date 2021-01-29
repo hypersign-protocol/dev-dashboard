@@ -117,7 +117,7 @@ export default {
     try{
       parsedUrl = url.parse(baseUrl);
       console.log(parsedUrl)
-      websocketUrl = parsedUrl.protocol === 'https:' ?  `wss://${parsedUrl.host}` : `ws://${parsedUrl.host}`;
+      websocketUrl = parsedUrl.protocol === 'https:' ?  `wss://${baseUrl}` : `ws://${baseUrl}`;
       console.log(websocketUrl)
     }catch(e){
       websocketUrl = "ws://localhost:4006";
