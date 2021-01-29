@@ -110,15 +110,15 @@ export default {
   },
   created() {
     console.log('Beofer creating websoceket connection')
-    let baseUrl = this.$config.studioServer.BASE_URL;
+    let baseUrl = this.$config.studioServer.WEBSOCKET_URL;
     let websocketUrl = "ws://localhost:4006";
     
     let parsedUrl = {}
     try{
       parsedUrl = url.parse(baseUrl);
-      console.log(parsedUrl)
+      // console.log(parsedUrl)
       websocketUrl = parsedUrl.protocol === 'https:' ?  `wss://${baseUrl}` : `ws://${baseUrl}`;
-      console.log(websocketUrl)
+      // console.log(websocketUrl)
     }catch(e){
       websocketUrl = "ws://localhost:4006";
     }
@@ -134,15 +134,15 @@ export default {
         }) {
           console.log('Websocket connection messag receieved ', data);
             let messageData = JSON.parse(data);
-            console.log(messageData)
+            // console.log(messageData)
             if (messageData.op == 'init') {
               _this.isLoading = false;
-              console.log(messageData.data)
+              // console.log(messageData.data)
               _this.value = messageData.data;
             } else if (messageData.op == 'end') {
                 _this.connection.close();
                 const authorizationToken = messageData.data.token;
-                console.log(authorizationToken)
+                // console.log(authorizationToken)
                 localStorage.setItem("authToken",authorizationToken);
 
                 
@@ -150,7 +150,7 @@ export default {
                           if (_this.$route.params.nextUrl != null) {
                             _this.$router.push(_this.$route.params.nextUrl);
                           } else {
-                            console.log(_this.$router)
+                            // console.log(_this.$router)
                             _this.$router.push("dashboard");
                           }
                     }
