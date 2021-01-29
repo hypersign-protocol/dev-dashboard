@@ -110,19 +110,14 @@ export default {
   },
   created() {
     console.log('Beofer creating websoceket connection')
-    let baseUrl = this.$config.studioServer.WEBSOCKET_URL;
+
     let websocketUrl = "ws://localhost:4006";
-    
-    let parsedUrl = {}
-    try{
-      parsedUrl = url.parse(baseUrl);
-      // console.log(parsedUrl)
-      websocketUrl = parsedUrl.protocol === 'https:' ?  `wss://${baseUrl}` : `ws://${baseUrl}`;
-      // console.log(websocketUrl)
-    }catch(e){
+    if(this.$config.studioServer.WEBSOCKET_URL){
+      websocketUrl = this.$config.studioServer.WEBSOCKET_URL
+    }else{
       websocketUrl = "ws://localhost:4006";
     }
-  
+    
     this.connection = new WebSocket(websocketUrl);
     this.connection.onopen = function() {
       console.log('Websocket connection is open')
