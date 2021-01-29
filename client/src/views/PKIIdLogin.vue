@@ -118,7 +118,7 @@ export default {
       websocketUrl = "ws://localhost:4006";
     }
     
-    this.connection = new WebSocket(websocketUrl);
+    this.connection = new WebSocket('wss://ssi.hypermine.in/developerws/');
     this.connection.onopen = function() {
       console.log('Websocket connection is open')
     };
