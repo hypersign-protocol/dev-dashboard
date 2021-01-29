@@ -80,7 +80,7 @@ const hypersignSDK = {
 const hs_schema = {
     APP_NAME: process.env.SCHEMA_NAME || 'Hypersign App Credential',
     ATTRIBUTES: process.env.SCEHMA_ATTRIBUTES || ["name",  "did",  "owner",  "schemaId",  "serviceEp", "subscriptionId", "planId", "planName"],
-    DESCRIPTION: process.env.SCEHMA_DESCRIPTION || 'Hypersign App Credential'
+    DESCRIPTION: process.env.SCEHMA_DESCRIPTION || 'Credential for application to access Hypersign APIs'
 }
 
         
