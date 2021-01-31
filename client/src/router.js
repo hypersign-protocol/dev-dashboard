@@ -7,7 +7,6 @@ import Subscription from './views/Subscription.vue';
 import Dashboard from './views/Dashboard.vue';
 import fetch from 'node-fetch';
 import Schema from './views/Schema.vue';
-import FourOFour from './views/404.vue';
 
 Vue.use(Router)
 
