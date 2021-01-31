@@ -21,6 +21,10 @@ const router = new Router({
             redirect: '/studio/login'
         },
         {
+            path: '/*',
+            component: 404
+        },
+        {
             path: '/login',
             redirect: '/studio/login'
         },
