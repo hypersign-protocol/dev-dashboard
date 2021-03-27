@@ -60,7 +60,7 @@
     <div class="row nav-style">
       <div class="col-md-4">        
         <div class="form-group form-inline">
-          <img src="https://hypersign.id/wp-content/uploads/2020/01/Banner_logo2.png" style="width: 23%;margin-top: 1%"/><h4 class="subtitle">  {{$config.app.name}} ({{$config.app.version}})</h4>  
+          <img src="https://thumb.tildacdn.com/tild3065-3765-4865-b331-393637653931/-/resize/150x/-/format/webp/hypersign_Yellow.png" style="width: 23%;margin-top: 1%"/><h4 class="subtitle">  {{$config.app.name}} ({{$config.app.version}})</h4>  
         </div>
       </div>
         <div class="col-md-8 rightAlign" style="padding-top:12px" v-if="!(authRoutes.includes($router.history.current.name))">
