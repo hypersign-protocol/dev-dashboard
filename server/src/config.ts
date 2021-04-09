@@ -2,7 +2,7 @@ import env from 'dotenv'
 import sqlite from 'sqlite3';
 import path from 'path';
 import fs from 'fs'
-import hsdk from 'lds-sdk'
+import HypersignSsiSDK  from 'hs-ssi-sdk';
 
 const log = require('simple-node-logger');
 
@@ -23,13 +23,14 @@ const logger = log.createSimpleLogger({
 })
 logger.setLevel(process.env.LOG_LEVEL || 'info')
 
-const port = process.env.PORT || 4006;
+const port = process.env.PORT || 5006;
 const host = process.env.HOST || "localhost";
 const hostnameurl = process.env.HOSTNAMEURL || `http://${host}:${port}`;
 
 const bootstrapConfig = {
     keysfilePath : path.join(__dirname + '/keys.json'),
-    schemafilePath : path.join(__dirname + '/schema.json')
+    schemafilePath : path.join(__dirname + '/schema.json'),
+    hypersignFilePath : path.join(__dirname + '/hypersign.json')
 }
 
 // DATABASE
@@ -55,10 +56,10 @@ const jwtSecret = process.env.JWT_SECRET || 'secretKey'
 const jwtExpiryInMilli = 240000
 
 const nodeServer = {
-    baseURl: process.env.NODE_SERVER_BASE_URL || "https://ssi.hypermine.in/core/",
+    baseURl: process.env.NODE_SERVER_BASE_URL ||  "http://localhost:5000/",//"https://ssi.hypermine.in/core/",
     didCreateEp: process.env.NODE_SERVER_DID_CREATE_EP || "api/did/register",
     schemaCreateEp: process.env.NODE_SERVER_SCHEMA_CREATE_EP || "api/schema/create",
-    schemaGetEp: process.env.NODE_SERVER_SCHEMA_GET_EP || "api/schema/get",
+    schemaGetEp: process.env.NODE_SERVER_SCHEMA_GET_EP || "api/v1/schema",
     schemaListEp: process.env.NODE_SERVER_SCHEMA_LIST_EP || "api/schema/list",
 }
 
@@ -71,16 +72,22 @@ const mail = {
 }
 
 
-const options = { nodeUrl: `${nodeServer.baseURl}`,  didScheme:  "did:hs"}
-const hypersignSDK = {
-    did: hsdk.did(options),
-    credential: hsdk.credential(options)
-}
+// const options = { nodeUrl: `${nodeServer.baseURl}`,  didScheme:  "did:hs"}
+// const hypersignSDK = {
+//     did: hsdk.did(options),
+//     credential: hsdk.credential(options)
+// }
+
+const hypersignSDK = new HypersignSsiSDK(
+    { nodeUrl: nodeServer.baseURl } // Hypersign node url
+  );
+
 
 const hs_schema = {
-    APP_NAME: process.env.SCHEMA_NAME || 'Hypersign App Credential',
+    APP_NAME: process.env.SCHEMA_NAME || 'Hypersign Developer Credential',
     ATTRIBUTES: process.env.SCEHMA_ATTRIBUTES || ["name",  "did",  "owner",  "schemaId",  "serviceEp", "subscriptionId", "planId", "planName"],
-    DESCRIPTION: process.env.SCEHMA_DESCRIPTION || 'Credential for application to access Hypersign APIs'
+    DESCRIPTION: process.env.SCEHMA_DESCRIPTION || "Credential to access Hypersign Authentication APIs",
+    HS_AUTH_SERVER_SCHEMA: "sch_3008d429-47fa-41fb-a2b0-6d9c294553d2"
 }
 
         

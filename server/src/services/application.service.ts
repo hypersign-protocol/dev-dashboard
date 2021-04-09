@@ -54,6 +54,9 @@ private addDays(date, days) {
             subscriber: this.owner
         });
 
+        if(!subscriptions){
+            throw new Error("Please subscript to create applications")
+        }
         // TODO: need to do this in better way..more dynamic way.
         // make use of SCHEMA.attributes
         const attributesMap = {
@@ -62,9 +65,9 @@ private addDays(date, days) {
             owner: this.owner,
             schemaId: this.schemaId,
             serviceEp: this.serviceEp,
-            subscriptionId: subscriptions[0]['id'],
-            planId: subscriptions[0]['planId'],
-            planName: subscriptions[0]['planName']
+            subscriptionId: subscriptions[0]? subscriptions[0]['id']: "",
+            planId: subscriptions[0]? subscriptions[0]['planId']:  "",
+            planName: subscriptions[0] ?subscriptions[0]['planName']: ""
         }
 
         const credential = await hypersignSDK.credential.generateCredential(schemaUrl, {

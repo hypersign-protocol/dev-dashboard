@@ -10,25 +10,18 @@ import { Pricing } from './services/pricing.service';
 import http from 'http';
 import fetch from 'node-fetch';
 import jwt from 'jsonwebtoken';
-
+import {generateHypersignJson } from './setup/bootstrapCredential';
 import { nodeServer, hypersignSDK} from './config';
-
 import HypersignAuth from 'hypersign-auth-js-sdk'
 
 export default function app() {
     const app = express();
     const server = http.createServer(app);
+    const hypersign = new HypersignAuth(server);
     const options = {
         jwtSecret: 'SecureDSecret#12@',
-        jwtExpiryTime: 30000,
-        hsNodeUrl: 'https://ssi.hypermine.in/core',
+        jwtExpiryTime: 30000
     };
-
-    const hypersign = new HypersignAuth({
-        server,
-        baseUrl: 'http://192.168.43.43:4006',
-        options
-    });
 
     app.use(express.json());
     app.use(cors());
@@ -195,70 +188,14 @@ export default function app() {
     });
 
     app.post('/hs/api/v2/app/create', hypersign.authorize.bind(hypersign), validateUserSubscription, async (req, res) => {    
+    // app.post('/hs/api/v2/app/create', async (req, res) => {    
         try {
-            const { userData } = req.body;
-
-            const appBasicConfig = req.body.basic;
-            const appAdvConfig = req.body.advance;
-
-            const tempApp = {
-                did: "",
-                name: "",
-                description: "",
-                serviceEndpoint: "",
-                owner: ""
-            }
-            let hypersignJSON = {
-                keys: {},
-                schemaId: "",
-                networkUrl: "https://ssi.hypermine.in/core",
-                mail: {
-                    host: "",
-                    port: 0,
-                    user: "",
-                    pass: "",
-                    name: ""
-                },
-                jwt: {
-                    secret: "",
-                    expiryTime: 0,
-                },
-                appCredential: {}
-            }
-
-            Object.assign(hypersignJSON, appAdvConfig);
-            Object.assign(tempApp, appBasicConfig);
-            tempApp.owner = userData.id;
-            
-            // step1: Make a call to core to generate keypair and register did
-            // const url = `${nodeServer.baseURl}${nodeServer.didCreateEp}?user=${JSON.stringify(tempApp)}`;
-            const url = `https://ssi.hypermine.in/core/api/did/register?user=${JSON.stringify(tempApp)}`;
-            console.log(url)
-            const resp = await fetch(url)
-            const json = await resp.json();
-            console.log(json.message.did)
-            Object.assign(hypersignJSON.keys, json.message.keys);
-            tempApp.did = json.message.did;
-
-            // In case jwt configuration is not set by developer.
-            if(hypersignJSON.jwt.secret == "") hypersignJSON.jwt.secret = hypersignSDK.did.getChallange();
-            if(hypersignJSON.jwt.expiryTime == 0) hypersignJSON.jwt.expiryTime = 120000
-
-
-            // step2: Store app realated configuration in db
-            const app = new Application({
-                name: tempApp.name,
-                did: tempApp.did,
-                owner: tempApp.owner,
-                schemaId: hypersignJSON.schemaId,
-                serviceEp: tempApp.serviceEndpoint
-            });
-            const appData = await app.create();
-
-            Object.assign(hypersignJSON.appCredential, appData.appCredential);
-
+            const { userData, basic, advance } = req.body;
+            console.log("Before calling generateHypersignJson")
+            const { hypersignJSON, app } = await generateHypersignJson(basic, advance, userData ? userData["id"]: basic.did ); 
+            console.log("After calling generateHypersignJson")
             // step3: Generate hypersign.json data and return
-            res.status(200).send({ status: 200, message: { hypersignJSON, newApp: appData.app }, error: null });
+            res.status(200).send({ status: 200, message: { hypersignJSON, newApp: app }, error: null });
         } catch (e) {
             res.status(500).send({ status: 500, message: null, error: e.message });
         }
@@ -402,23 +339,25 @@ export default function app() {
     ///
     ///////////////////////////
 
-
-
     app.post('/hs/api/v2/schema/create', hypersign.authorize.bind(hypersign), validateSchemaCreation, async (req, res) => {
         try {
-            const url = `${nodeServer.baseURl}${nodeServer.schemaCreateEp}`;
-            let headers = {
-                "Content-Type": "application/json",
-              };
-            const resp = await fetch(url, {
-                method: "POST",
-                body: JSON.stringify(req.body),
-                headers,
-              });
-            const j =  await resp.json();
-            if(j.status != 200) throw new Error(j.error);
-            logger.debug(j);
-            res.status(200).send({ status: 200, message: j.message, error: null });
+            // const url = `${nodeServer.baseURl}${nodeServer.schemaCreateEp}`;
+            // let headers = {
+            //     "Content-Type": "application/json",
+            //   };
+            // const resp = await fetch(url, {
+            //     method: "POST",
+            //     body: JSON.stringify(req.body),
+            //     headers,
+            //   });
+            // const j =  await resp.json();
+            // if(j.status != 200) throw new Error(j.error);
+            // logger.debug(j);
+
+            const schemaGenerated = await hypersignSDK.schema.generateSchema(req.body);
+            const r = await hypersignSDK.schema.registerSchema(schemaGenerated);
+
+            res.status(200).send({ status: 200, message: r, error: null });
         } catch (e) {
             res.status(500).send({ status: 500, message: null, error: e.message });
         }

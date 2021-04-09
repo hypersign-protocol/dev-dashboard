@@ -118,7 +118,8 @@ export default {
       websocketUrl = "ws://localhost:4006";
     }
     
-    this.connection = new WebSocket('wss://ssi.hypermine.in/developerws/');
+    // this.connection = new WebSocket('wss://ssi.hypermine.in/developerws/');
+    this.connection = new WebSocket('ws://localhost:5006');
     this.connection.onopen = function() {
       console.log('Websocket connection is open')
     };
@@ -133,7 +134,7 @@ export default {
             if (messageData.op == 'init') {
               _this.isLoading = false;
               // console.log(messageData.data)
-              _this.value = messageData.data;
+              _this.value = JSON.stringify(messageData.data);
             } else if (messageData.op == 'end') {
                 _this.connection.close();
                 const authorizationToken = messageData.data.token;
