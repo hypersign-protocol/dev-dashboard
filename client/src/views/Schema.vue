@@ -159,7 +159,7 @@
                   <label :for="row.id"
                     ><a
                       :href="
-                        `${$config.nodeServer.BASE_URL}${$config.nodeServer.SCHEMA_GET_EP}/` +
+                        `${$config.nodeServer.BASE_URL}api/v1/schema/` +
                         row.id
                       "
                       target="_blank"

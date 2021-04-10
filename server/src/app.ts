@@ -176,7 +176,7 @@ export default function app() {
     });
 
     app.post('/hs/api/v2/app/create', hypersign.authorize.bind(hypersign), validateUserSubscription, async (req, res) => {    
-    // app.post('/hs/api/v2/app/create', async (req, res) => {    
+    // app.post('/hs/api/v2/app/create',  hypersign.authorize.bind(hypersign), async (req, res) => {    
         try {
             const { userData, basic, advance } = req.body;
             console.log("Before calling generateHypersignJson")

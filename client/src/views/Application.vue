@@ -351,7 +351,7 @@ img {
                       <label
                         ><a
                           v-bind:href="
-                            'https://ssi.hypermine.in/core/api/did/resolve/' +
+                            `${$config.nodeServer.BASE_URL}api/v1/did/` +
                             app.did
                           "
                           target="_blank"
@@ -366,7 +366,7 @@ img {
                       <label
                         ><a
                           v-bind:href="
-                            'https://ssi.hypermine.in/core/api/schema/get/' +
+                            `${$config.nodeServer.BASE_URL}api/v1/schema/` +
                             app.schemaId
                           "
                           target="_blank"
@@ -455,10 +455,7 @@ export default {
       errors: [],
       basic: {
         name: "",
-        description: "",
         serviceEndpoint: "",
-        did: "",
-        logoUrl: "",
       },
       advance: {
         schemaId: "",
@@ -505,25 +502,25 @@ export default {
     },
     formatSchemaString(schemaStr){
       const sJson =  schemaStr;
-                if(sJson){
-                  const schemaObj =  JSON.parse(sJson);
-                  const schema = {
-                    id: "",
-                    credentialName: "",
-                    version: "",
-                    attributes: [],
-                    description: ""
-                  }
+        if(sJson){
+          const schemaObj =  JSON.parse(sJson);
+          const schema = {
+            id: "",
+            credentialName: "",
+            version: "",
+            attributes: [],
+            description: ""
+          }
 
-                  schema.id = schemaObj.id;
-                  schema.credentialName = schemaObj.name;
-                  schema.version = schemaObj.modelVersion;
-                  schema.attributes = schemaObj.schema.required;
-                  schema.description = schemaObj.schema.description;
-                  return schema;
-              }else{
-                return null
-              }
+          schema.id = schemaObj.id;
+          schema.credentialName = schemaObj.name;
+          schema.version = schemaObj.modelVersion;
+          schema.attributes = schemaObj.schema.required;
+          schema.description = schemaObj.schema.description;
+          return schema;
+      }else{
+        return null
+      }
     },
     async getList(type) {
       let url = "";
@@ -595,8 +592,8 @@ export default {
         this.errors.push("Invalid service endpoint url");
       }
 
-      if (this.basic.logoUrl != "" && !isWebUri(this.basic.logoUrl))
-        this.errors.push("Invalid logo url");
+      // if (this.basic.logoUrl != "" && !isWebUri(this.basic.logoUrl))
+      //   this.errors.push("Invalid logo url");
 
       if (this.errors.length > 0) return false;
       else return true;
@@ -620,7 +617,9 @@ export default {
             advance: {},
           };
 
+
           Object.assign(data.basic, this.basic);
+
           data.advance.schemaId = this.selected ? this.selected : "";
           const resp = await fetch(createAppUrl, {
             method: "POST",

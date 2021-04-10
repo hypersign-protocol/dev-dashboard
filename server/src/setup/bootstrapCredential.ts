@@ -110,9 +110,7 @@ export async function registerSchema1 ({name, description, author, attributes, s
 export async function generateHypersignJson (basic = {}, advance = {}, ownerDid, storeHypersign = false) {
 
     const tempApp = {
-        did: "",
         name: "",
-        description: "",
         serviceEndpoint: "",
         owner: ""
     }
@@ -135,16 +133,14 @@ export async function generateHypersignJson (basic = {}, advance = {}, ownerDid,
     }
 
     Object.assign(hypersignJSON, advance);
-    Object.assign(tempApp, basic);
-    tempApp.owner = ownerDid // userData.id;
+    Object.assign(tempApp, {...basic});
+    tempApp["owner"] = ownerDid // userData.id;
     
-    // step1: Make a call to core to generate keypair and register did
-    // const url = `${nodeServer.baseURl}${nodeServer.didCreateEp}?user=${JSON.stringify(tempApp)}`;
     const resp = await hypersignSDK.did.getDid({user : tempApp});
     const { did, keys, didDoc } = resp;
     const r = await hypersignSDK.did.register(didDoc);
     Object.assign(hypersignJSON.keys, keys);
-    tempApp.did = did;
+    tempApp["did"] = did;
 
 
     // In case jwt configuration is not set by developer.
@@ -154,8 +150,8 @@ export async function generateHypersignJson (basic = {}, advance = {}, ownerDid,
     // step2: Store app realated configuration in db
     const app = new Application({
         name: tempApp.name,
-        did: tempApp.did,
-        owner: tempApp.owner,
+        did: tempApp["did"],
+        owner: tempApp["owner"],
         schemaId: hypersignJSON.schemaId,
         serviceEp: tempApp.serviceEndpoint
     });
