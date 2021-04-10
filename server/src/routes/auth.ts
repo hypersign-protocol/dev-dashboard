@@ -10,37 +10,7 @@ export = (hypersign) => {
             const dataFromHypersign = req.body.hsUserData;
             console.log(dataFromHypersign)
             const userModel = dataFromHypersign.hs_userdata;
-
             if (!userModel) throw new Error(`Could not fetch usermodel from Hypersign auth`)
-            console.log(userModel)
-            // /**
-            //  * Example of user model
-            //     {
-            //         Name: 'Vishwas',
-            //         Email: 'vishu112anand1@gmail.com',
-            //         id: 'did:hs:94c5f4b7-582c-4663-ae1e-c58f4488114f'
-            //     },
-            // */
-
-            // const user = new User({
-            //     fname: userModel.Name,
-            //     email: userModel.Email,
-            //     publicKey: userModel.id
-            // });
-
-            // // Check if this is first time user, Query db using userModel.id
-            // const userindbstr = await user.fetch({
-            //     email: user.email,
-            //     publicKey: user.publicKey
-            // })
-            // // If it is, then add this user in database
-            // if (!userindbstr || userindbstr === "") {
-            //     console.log(`User ${user.email} is creating.`)
-            //     await user.create();
-            // } else {
-            //     // Otherwise, do not do anything.
-            //     console.log(`User ${user.email} already exists.`)
-            // }
             res.status(200).send({ status: 200, message: "Success", error: null });
 
         } catch (e) {
