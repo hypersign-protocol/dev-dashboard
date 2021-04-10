@@ -2,21 +2,11 @@ import { nodeServer, logger, bootstrapConfig, hs_schema, hypersignSDK, hostnameu
 import { store, retrive } from '../utils/file';
 import { Application } from '../services/application.service';
 
-import ApplicationModel, {IApplication} from '../models/application';
-
 const  {keysfilePath, schemafilePath, hypersignFilePath} =  bootstrapConfig;
-
-
 
 // Register DID
 const registerDid = async () => {
     logger.info("Registering did start....")
-    
-    // const url = `${nodeServer.baseURl}${nodeServer.didCreateEp}?name=${hs_schema.APP_NAME}`;
-    // // Call create api of core and get keys.json
-    // const resp = await fetch(url);
-    // const json = await resp.json();
-    // if(json && json.status != 200) throw new Error(json.error);
 
     const resp = await hypersignSDK.did.getDid({user : {
         name: hs_schema.APP_NAME
@@ -31,42 +21,41 @@ const registerDid = async () => {
 }
 
 
-// Register schema
-const registerSchema = async () => {
-    logger.info("Registering schema start....")
-    const keys = JSON.parse(await retrive(keysfilePath));
-    logger.info("Fetched keys = " + JSON.stringify(keys))
+// // Register schema
+// const registerSchema = async () => {
+//     logger.info("Registering schema start....")
+//     const keys = JSON.parse(await retrive(keysfilePath));
+//     logger.info("Fetched keys = " + JSON.stringify(keys))
     
-    const schemaData = {
-        name: hs_schema.APP_NAME,
-        author: keys.publicKey.id.split('#')[0],
-        description: hs_schema.DESCRIPTION,
-        properties: {}
-    };
+//     const schemaData = {
+//         name: hs_schema.APP_NAME,
+//         author: keys.publicKey.id.split('#')[0],
+//         description: hs_schema.DESCRIPTION,
+//         properties: {}
+//     };
 
-    if(!hs_schema.ATTRIBUTES || hs_schema.ATTRIBUTES.length <= 0){
-        throw new Error("Please set schema attribtues in config before proceeding");
-    }
+//     if(!hs_schema.ATTRIBUTES || hs_schema.ATTRIBUTES.length <= 0){
+//         throw new Error("Please set schema attribtues in config before proceeding");
+//     }
     
-    (hs_schema.ATTRIBUTES as Array<string>).forEach(element => {
-        schemaData.properties[element] = ""
-    });
-    const schemaGenerated = await hypersignSDK.schema.generateSchema(schemaData);
-    const r = await hypersignSDK.schema.registerSchema(schemaGenerated);
+//     (hs_schema.ATTRIBUTES as Array<string>).forEach(element => {
+//         schemaData.properties[element] = ""
+//     });
+//     const schemaGenerated = await hypersignSDK.schema.generateSchema(schemaData);
+//     const r = await hypersignSDK.schema.registerSchema(schemaGenerated);
 
 
-    const schemaToStore = {
-        id: r["schemaId"],
-        credentialName:  schemaData.name,
-        attributes: hs_schema.ATTRIBUTES,
-        version: "1.0",
-        owner: schemaData.author,
-        raw: r["schemaString"],
-        description:  schemaData.description
-    }
-    await store(schemaToStore, schemafilePath);
-
-}
+//     const schemaToStore = {
+//         id: r["schemaId"],
+//         credentialName:  schemaData.name,
+//         attributes: hs_schema.ATTRIBUTES,
+//         version: "1.0",
+//         owner: schemaData.author,
+//         raw: r["schemaString"],
+//         description:  schemaData.description
+//     }
+//     await store(schemaToStore, schemafilePath);
+// }
 
 export async function fetchSchema({author}: {author: string}) : Promise<Array<object>>{
     const schemaGenerated = await hypersignSDK.schema.getSchema({author});
