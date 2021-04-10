@@ -1,5 +1,4 @@
 import { nodeServer, logger, bootstrapConfig, hs_schema, hypersignSDK, hostnameurl } from '../config';
-import fetch from 'node-fetch';
 import { store, retrive } from '../utils/file';
 import { Application } from '../services/application.service';
 const  {keysfilePath, schemafilePath, hypersignFilePath} =  bootstrapConfig;
@@ -65,6 +64,47 @@ const registerSchema = async () => {
 
 }
 
+export async function fetchSchema({author}: {author: string}) : Promise<Array<object>>{
+    const schemaGenerated = await hypersignSDK.schema.getSchema({author});
+    return schemaGenerated;
+}
+
+// Register schema
+export async function registerSchema1 ({name, description, author, attributes, storeSchema = false}: 
+    {name: string, description: string, author: string, attributes: Array<string>, storeSchema: boolean}) {
+    logger.info("Registering schema start....")
+    const schemaData = {
+        name,
+        author,
+        description,
+        properties: {}
+    };
+
+    if(!attributes || attributes.length <= 0){
+        throw new Error("Please set schema attribtues in config before proceeding");
+    }
+    
+    (attributes as Array<string>).forEach(element => {
+        schemaData.properties[element] = ""
+    });
+
+    const schemaGenerated = await hypersignSDK.schema.generateSchema(schemaData);
+    const r = await hypersignSDK.schema.registerSchema(schemaGenerated);
+
+    if(storeSchema){
+        const schemaToStore = {
+            id: r["schemaId"],
+            credentialName:  schemaData.name,
+            attributes: attributes,
+            version: "1.0",
+            owner: schemaData.author,
+            raw: r["schemaString"],
+            description:  schemaData.description
+        }
+        await store(schemaToStore, schemafilePath);
+    }
+    return r;    
+}
 
 
 export async function generateHypersignJson (basic = {}, advance = {}, ownerDid, storeHypersign = false) {
@@ -136,7 +176,18 @@ export async function generateHypersignJson (basic = {}, advance = {}, ownerDid,
 
 export async function bootstrap(){
     await registerDid()
-    await registerSchema();
+
+    const keys = JSON.parse(await retrive(keysfilePath));
+    const ownerDid = keys.publicKey.id.split('#')[0];
+
+    const schemaData = {
+        name: hs_schema.APP_NAME,
+        author: ownerDid,
+        description: hs_schema.DESCRIPTION,
+        attributes: hs_schema.ATTRIBUTES as Array<string>,
+        storeSchema: true
+    }
+    await registerSchema1 ( { ...schemaData }) 
 
     const config = {
         basic: {
@@ -147,15 +198,8 @@ export async function bootstrap(){
             logoUrl: ""
         },
         advance: {}
-    }
-
-    console.log(config)
-
-    
-
-    const issuerKeys = JSON.parse(await retrive(keysfilePath));
-    const did = issuerKeys.publicKey.id.split("#")[0];
-    await generateHypersignJson(config.basic, config.advance, did, true); 
+    }    
+    await generateHypersignJson(config.basic, config.advance, ownerDid, true); 
 }
 
 

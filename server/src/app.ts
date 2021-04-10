@@ -8,11 +8,11 @@ import { Application } from './services/application.service';
 import { Subscription } from './services/subscription.service';
 import { Pricing } from './services/pricing.service';
 import http from 'http';
-import fetch from 'node-fetch';
 import jwt from 'jsonwebtoken';
 import {generateHypersignJson } from './setup/bootstrapCredential';
-import { nodeServer, hypersignSDK} from './config';
-import HypersignAuth from 'hypersign-auth-js-sdk'
+import { hypersignSDK} from './config';
+import HypersignAuth from 'hypersign-auth-js-sdk';
+import { registerSchema1, fetchSchema } from './setup/bootstrapCredential';
 
 export default function app() {
     const app = express();
@@ -66,19 +66,7 @@ export default function app() {
             });
 
 
-            let schemaList = [];
-            const url = `${nodeServer.baseURl}${nodeServer.schemaListEp}`;
-            const resp = await fetch(url)
-            const j = await resp.json()
-
-            if (j.status != 200) throw new Error(j.error);
-
-            schemaList = j.message;
-            if (schemaList && schemaList.length > 0) {
-                schemaList = schemaList.filter(
-                    (x) => x['owner'] === userDid
-                );
-            }
+            let schemaList = await fetchSchema({author: userDid});
 
             const maxAppsCounts = parseInt(subscriptions[0]['maxAppsCounts']);
             const createdSchemaCount = schemaList.length;
@@ -341,23 +329,25 @@ export default function app() {
 
     app.post('/hs/api/v2/schema/create', hypersign.authorize.bind(hypersign), validateSchemaCreation, async (req, res) => {
         try {
-            // const url = `${nodeServer.baseURl}${nodeServer.schemaCreateEp}`;
-            // let headers = {
-            //     "Content-Type": "application/json",
-            //   };
-            // const resp = await fetch(url, {
-            //     method: "POST",
-            //     body: JSON.stringify(req.body),
-            //     headers,
-            //   });
-            // const j =  await resp.json();
-            // if(j.status != 200) throw new Error(j.error);
-            // logger.debug(j);
-
-            const schemaGenerated = await hypersignSDK.schema.generateSchema(req.body);
-            const r = await hypersignSDK.schema.registerSchema(schemaGenerated);
-
+            const { userData } = req.body;
+            const r = await registerSchema1({
+                author: userData.id,
+                ...req.body
+            })
+            
             res.status(200).send({ status: 200, message: r, error: null });
+        } catch (e) {
+            res.status(500).send({ status: 500, message: null, error: e.message });
+        }
+
+    })
+
+
+    app.get('/hs/api/v2/schema/get', hypersign.authorize.bind(hypersign), async (req, res) => {
+        try {
+            const { userData } = req.body
+            const schemaList = await hypersignSDK.schema.getSchema({author: userData.id});
+            res.status(200).send({ status: 200, message: schemaList, error: null });
         } catch (e) {
             res.status(500).send({ status: 500, message: null, error: e.message });
         }

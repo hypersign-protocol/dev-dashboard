@@ -178,7 +178,7 @@
               >
                 <div
                   class="sm-tiles"
-                  v-for="attr in JSON.parse(row.attributes)"
+                  v-for="attr in row.attributes"
                   :key="attr"
                 >
                   {{ attr }}
@@ -264,20 +264,51 @@ export default {
         text: msg,
       });
     },
+    formatSchemaString(schemaStr){
+      const sJson =  schemaStr;
+                console.log(sJson)
+                if(sJson){
+                  const schemaObj =  JSON.parse(sJson);
+                  const schema = {
+                    id: "",
+                    credentialName: "",
+                    version: "",
+                    attributes: [],
+                    description: ""
+                  }
+
+                  schema.id = schemaObj.id;
+                  schema.credentialName = schemaObj.name;
+                  schema.version = schemaObj.modelVersion;
+                  schema.attributes = schemaObj.schema.required;
+                  schema.description = schemaObj.schema.description;
+                  return schema;
+              }else{
+                return null
+              }
+    },
     fetchSchemas() {
-      const url = `${this.$config.nodeServer.BASE_URL}${this.$config.nodeServer.SCHEMA_LIST_EP}`;
-      fetch(url)
+      const url = `${this.$config.studioServer.BASE_URL}hs/api/v2/schema/get`;
+      fetch(url, {
+                    headers: {
+                        "Authorization": `Bearer ${this.authToken}`
+                    },
+                    method: "GET"
+                },)
         .then((res) => res.json())
         .then((j) => {
           if (j.status != 200) throw new Error(j.error);
-          this.schemaList = j.message;
-          if (this.schemaList && this.schemaList.length > 0) {
-            this.schemaList = this.schemaList.filter(
-              (x) => x.owner === this.user.id
-            );
-            //console.log(this.schemaList)
+          const schemas =  j.message;
+          if(schemas && schemas.length > 0){
+            schemas.forEach(element => {
+              const schema  = this.formatSchemaString(element.schemaString)
+              if(schema){
+                this.schemaList.push(schema);
+              }
+            });
           }
-
+          
+          console.log(JSON.stringify(this.schemaList))
         })
         .catch((e) => this.notifyErr(`Error: ${e.message}`));
     },
@@ -295,7 +326,7 @@ export default {
     },
     addBlankAttrBox() {
       if (this.attributeName != " ") {
-        this.attributes.push(this.attributeName);
+        this.attributes.push(this.attributeName.trim());
         this.attributeName = " ";
       }
     },
@@ -364,9 +395,10 @@ export default {
         .then((j) => {
           if (j.status === 200) {
             this.notifySuccess("Schema successfull created");
-            this.schemaList.push({
-              ...j.message,
-            });
+            const schema  = this.formatSchemaString(j.message.schemaString)
+            if(schema){
+              this.schemaList.push(schema);
+            }
             this.isLoading = false;
           } else {
             this.notifyErr(`Error: ${j.error}`);

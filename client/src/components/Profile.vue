@@ -100,7 +100,7 @@
                   >
                 </p>
                 <p>Email</p>
-                <p class="fVal">{{ user.Email }}</p>
+                <p class="fVal">{{ user.email }}</p>
                 <p v-if="user.phoneNumber">
                   Phone Number: {{ user.phoneNumber }}
                 </p>
@@ -141,9 +141,7 @@ export default {
   },
   created() {
     const usrStr = localStorage.getItem("user");
-    //console.log(usrStr);
     this.user = { ...JSON.parse(usrStr) };
-    //console.log(this.user);
     this.userKeys = Object.keys(this.user);
     this.pollData();
   },
@@ -156,18 +154,27 @@ export default {
         })
         .catch((e) => alert(`Error: ${e.message}`));
     },
+    fetchSchemas() {
+      const url = `${this.$config.studioServer.BASE_URL}hs/api/v2/schema/get`;
+      fetch(url, {
+                    headers: {
+                        "Authorization": `Bearer ${this.authToken}`
+                    },
+                    method: "GET"
+                },)
+        .then((res) => res.json())
+        .then((j) => {
+          if (j.status != 200) throw new Error(j.error);
+          const schemas =  j.message;
+          this.schemaCount = schemas.length;
+        })
+        .catch((e) => this.notifyErr(`Error: ${e.message}`));
+    },
     pollData() {
-      let url = `${this.$config.nodeServer.BASE_URL}${this.$config.nodeServer.SCHEMA_LIST_EP}`;
-      let options = {};
-      this.fetchData(url).then((data) => {
-        if (data && data.length > 0) {
-          data = data.filter((x) => x.owner === this.user.id);
-          this.schemaCount = data.length;
-        }
-      });
-
-      url = `${this.$config.studioServer.BASE_URL}hs/api/v2/app`;
-      options = {
+      this.fetchSchemas();
+      
+      const url = `${this.$config.studioServer.BASE_URL}hs/api/v2/app`;
+      const options = {
         method: "GET",
         headers: { Authorization: `Bearer ${this.authToken}` },
       };

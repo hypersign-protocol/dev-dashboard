@@ -503,13 +503,36 @@ export default {
     toggle() {
       this.open = !this.open;
     },
+    formatSchemaString(schemaStr){
+      const sJson =  schemaStr;
+                if(sJson){
+                  const schemaObj =  JSON.parse(sJson);
+                  const schema = {
+                    id: "",
+                    credentialName: "",
+                    version: "",
+                    attributes: [],
+                    description: ""
+                  }
+
+                  schema.id = schemaObj.id;
+                  schema.credentialName = schemaObj.name;
+                  schema.version = schemaObj.modelVersion;
+                  schema.attributes = schemaObj.schema.required;
+                  schema.description = schemaObj.schema.description;
+                  return schema;
+              }else{
+                return null
+              }
+    },
     async getList(type) {
       let url = "";
       let options = {};
       if (type === "SCHEMA") {
-        url = `${this.$config.nodeServer.BASE_URL}${this.$config.nodeServer.SCHEMA_LIST_EP}`;
+        url = `${this.$config.studioServer.BASE_URL}hs/api/v2/schema/get`;
         options = {
           method: "GET",
+          headers: { Authorization: `Bearer ${this.authToken}` },
         };
       } else {
         url = `${this.$config.studioServer.BASE_URL}hs/api/v2/app`;
@@ -527,13 +550,15 @@ export default {
       if (type === "SCHEMA") {
         const schemaList = j.message;
         if (schemaList && schemaList.length > 0) {
-          schemaList.forEach((s) => {
-            if (s.owner != this.user.id) return;
-            this.schemaMap[s.id] = JSON.parse(s.attributes);
-            this.selectOptions.push({
-              value: s.id,
-              text: `${s.credentialName} | ${s.id}`,
-            });
+          schemaList.forEach((element) => {
+            const s  = this.formatSchemaString(element.schemaString)
+            if(s){
+              this.schemaMap[s.id] = s.attributes;
+              this.selectOptions.push({
+                value: s.id,
+                text: `${s.credentialName} | ${s.id}`,
+              });
+            }            
           });
         }
       } else {
