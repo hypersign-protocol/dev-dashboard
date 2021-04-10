@@ -75,7 +75,7 @@
               {{price.supportType}}
             </p>
             <p style="text-align:center">
-              <button  class="btn btn-lg btn-primary btn-sm" @click="subscribe(price.id)" :disabled="price.isSubscribed">Subscribe</button>
+              <button  class="btn btn-lg btn-primary btn-sm" @click="subscribe(price.planId)" :disabled="price.isSubscribed">Subscribe</button>
             </p>
           </div>
           <div class="card-body" v-if="price.planName != 'Tier 1'" style="padding: 20%;text-align:center; min-height:280px">
@@ -99,7 +99,7 @@
           <tbody>
             <tr v-for="row in subscriptionList" :key="row">
               <th>
-                {{row.id}}
+                {{row._id}}
               </th>
               <td>{{row.subscriptionDate}}</td>
               <td>{{row.planName}}</td>
@@ -156,7 +156,8 @@ export default {
     this.subscriptionList = await this.fetchData(url, options);
 
     this.pricingList = this.pricingList.map((x) => {
-      if (this.subscriptionList.some((y) => y.planId == x.id)) {
+      console.log(x)
+      if (this.subscriptionList.some((y) => y.planId == x.planId)) {
         x.isSubscribed = true;
       } else {
         x.isSubscribed = false;

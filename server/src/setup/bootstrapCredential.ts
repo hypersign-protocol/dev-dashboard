@@ -1,7 +1,11 @@
 import { nodeServer, logger, bootstrapConfig, hs_schema, hypersignSDK, hostnameurl } from '../config';
 import { store, retrive } from '../utils/file';
 import { Application } from '../services/application.service';
+
+import ApplicationModel, {IApplication} from '../models/application';
+
 const  {keysfilePath, schemafilePath, hypersignFilePath} =  bootstrapConfig;
+
 
 
 // Register DID
@@ -152,7 +156,7 @@ export async function generateHypersignJson (basic = {}, advance = {}, ownerDid,
         name: tempApp.name,
         did: tempApp["did"],
         owner: tempApp["owner"],
-        schemaId: hypersignJSON.schemaId,
+        schemaId: hypersignJSON.schemaId && hypersignJSON.schemaId != "" ? hypersignJSON.schemaId: hs_schema.HS_AUTH_SERVER_SCHEMA,
         serviceEp: tempApp.serviceEndpoint
     });
     const appData = await app.create();

@@ -1,5 +1,5 @@
-import { Router } from 'express'
-import { Pricing } from '../services/pricing.service';
+import { Router } from 'express';
+import PricingModel, {IPricing} from '../models/pricing';
 
 export = () => {
 
@@ -8,14 +8,14 @@ export = () => {
     router.post('/create', async (req, res) => {
         const plan = req.body;
         plan.offerings = JSON.stringify(plan.offerings);
-        const pricing = new Pricing({ ...plan });
-        const price = await pricing.create();
-        res.status(200).send({ status: 200, message: price, error: null });
+        const newPrice: IPricing = await PricingModel.create({
+            ...plan
+          });
+        res.status(200).send({ status: 200, message: newPrice, error: null });
     })
 
     router.get('/', async (req, res) => {
-        const pricing = new Pricing({});
-        let pricings = await pricing.fetch();
+        const pricings:Array<IPricing> = await PricingModel.find({});
         res.status(200).send({ status: 200, message: pricings, error: null });
     })
 

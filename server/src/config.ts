@@ -1,19 +1,17 @@
 import env from 'dotenv'
-import sqlite from 'sqlite3';
 import path from 'path';
 import fs from 'fs'
 import HypersignSsiSDK  from 'hs-ssi-sdk';
-
+import mongoose from 'mongoose';
 const log = require('simple-node-logger');
 
 
 env.config();
 
 const log_dir = path.resolve(__dirname,'../log')
-const db_dir = path.resolve(__dirname,'../db')
 
 if(!fs.existsSync(log_dir)) fs.mkdirSync(log_dir)
-if(!fs.existsSync(db_dir)) fs.mkdirSync(db_dir)
+
 
 // LOGGING
 const log_path = path.resolve(__dirname, process.env.LOG_FILEPATH || 'ssi-infra.log')
@@ -33,17 +31,17 @@ const bootstrapConfig = {
     hypersignFilePath : path.join(__dirname + '/hypersign.json')
 }
 
-// DATABASE
-// Ref: https://www.sqlitetutorial.net/sqlite-nodejs/
-const db_file_path = process.env.DATABASE_FILEPATH || 'ssi.db'; 
-const db_path = path.resolve(__dirname, db_file_path)
-const db =  new sqlite.Database(db_path, (err) => {
-    if(err){
-        logger.error(`SQLite db error:  ${err.message}`)
-    }else{
-        logger.info(`Connected to ssi-infa database. DB path = ${db_path}`)
-    }
-});
+//DATABASE
+const dbConnUrl = process.env.DB_URL && process.env.DB_URL != "" ? process.env.DB_URL :  "mongodb://admin:admin@cluster0-shard-00-00.jg0ef.mongodb.net:27017,cluster0-shard-00-01.jg0ef.mongodb.net:27017,cluster0-shard-00-02.jg0ef.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-n72avn-shard-0&authSource=admin&retryWrites=true&w=majority";
+if(dbConnUrl){
+    mongoose.connect(dbConnUrl, { useNewUrlParser: true, useUnifiedTopology: true }, (err) => {
+        if(err){
+            console.error("Error: could not connect to mongo database") 
+        }else{
+            console.log("Connected to mongo database")
+        }
+    })
+} 
 
 // DID Related: 
 // TODO: Not required for this project. so remove
@@ -104,7 +102,6 @@ export  {
     port,
     host,
     logger,
-    db,
     did,
     jwtSecret,
     jwtExpiryInMilli,

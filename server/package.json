@@ -30,13 +30,13 @@
         "hypersign-auth-js-sdk": "^2.0.2",
         "jsonwebtoken": "^8.5.1",
         "lds-sdk": "^4.0.1",
+        "mongoose": "^5.12.3",
         "node-fetch": "^2.6.1",
         "nodemailer": "^6.4.11",
         "qrcode": "^1.4.4",
         "sha.js": "^2.4.11",
         "simple-node-logger": "^18.12.24",
-        "sqlite3": "^5.0.0",
-        "uuid": "^8.2.0"
+        "uuid": "^8.3.2"
     },
     "devDependencies": {
         "@types/express": "^4.17.6",
