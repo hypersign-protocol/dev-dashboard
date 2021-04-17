@@ -111,15 +111,9 @@ export default {
   created() {
     console.log('Beofer creating websoceket connection')
 
-    let websocketUrl = "ws://localhost:4006";
-    if(this.$config.studioServer.WEBSOCKET_URL){
-      websocketUrl = this.$config.studioServer.WEBSOCKET_URL
-    }else{
-      websocketUrl = "ws://localhost:4006";
-    }
+    let websocketUrl = this.$config.studioServer.WEBSOCKET_URL != "" ? this.$config.studioServer.WEBSOCKET_URL: "ws://localhost:4006";
     
-    // this.connection = new WebSocket('wss://ssi.hypermine.in/developerws/');
-    this.connection = new WebSocket('ws://localhost:5006');
+    this.connection = new WebSocket(websocketUrl);
     this.connection.onopen = function() {
       console.log('Websocket connection is open')
     };
