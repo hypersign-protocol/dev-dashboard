@@ -2,7 +2,7 @@ const commandLineArgs = require('command-line-args');
 const commandLineUsage = require('command-line-usage');
 import { bootstrap } from './setup/bootstrapCredential';
 import setupDb from './setup/db.setup';
-export default async function setCmdArgs() {
+async function setCmdArgs() {
     const optionDefinitions = [
         {
             name: 'help',
@@ -61,3 +61,5 @@ export default async function setCmdArgs() {
         return true;
     }
 }
+
+setCmdArgs()

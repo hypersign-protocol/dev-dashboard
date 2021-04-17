@@ -7,13 +7,14 @@
     "scripts": {
         "setup": "npm run setEnv && npm run build && npm run newdb",
         "newdb": "npm run start -- --newdb",
-        "setup-noenv": "npm run build && npm run start -- --newdb && npm run setUI",
-        "setEnv": "if [ -e .env.staging ]; then cp .env.staging .env; fi",
-        "setUI": "mkdir -p public && mkdir -p dist/public && cp -R ../client/dist/* public && cp -R public/* dist/public",
-        "start": "node dist/index.js",
-        "dev": "nodemon src/index.ts",
-        "build": "tsc -p .",
-        "bootstrap": "npm run start -- --bootstrap",
+        "start": "NODE_ENV=production node dist/index.js",
+        "prod": "NODE_ENV=production node dist/api.bundle.js",
+        "dev": "NODE_ENV=development nodemon src/index.ts",
+        "build": "rimraf dist && tsc -p .",
+        "build:dev": "rimraf dist && tsc -p .",
+        "build:prod": "rimraf dist && webpack",
+        "bootstrap": "NODE_ENV=production node dist/setcmdArgs.js --bootstrap",
+        "bootstrap:dev": "NODE_ENV=development ts-node src/setcmdArgs.ts --bootstrap",
         "test": "mocha -r ts-node/register src/tests/**/*.test.ts"
     },
     "author": "Vishwas Anand Bhushan",
@@ -29,20 +30,22 @@
         "hs-ssi-sdk": "^5.0.1",
         "hypersign-auth-js-sdk": "^2.0.2",
         "jsonwebtoken": "^8.5.1",
-        "lds-sdk": "^4.0.1",
         "mongoose": "^5.12.3",
         "node-fetch": "^2.6.1",
         "nodemailer": "^6.4.11",
         "qrcode": "^1.4.4",
         "sha.js": "^2.4.11",
-        "simple-node-logger": "^18.12.24",
+        "winston": "^3.3.3",
         "uuid": "^8.3.2"
     },
     "devDependencies": {
         "@types/express": "^4.17.6",
         "@types/node": "^14.0.23",
         "nodemon": "^2.0.4",
+        "ts-loader": "^8.1.0",
         "ts-node": "^8.10.2",
-        "typescript": "^3.4.0"
+        "typescript": "^3.4.0",
+        "webpack": "^5.27.1",
+        "webpack-cli": "^4.5.0"
     }
 }
