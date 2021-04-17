@@ -32,7 +32,7 @@ export = (hypersign) => {
         const pricing = new Subscription({});
         const subscriptions = await pricing.fetch({
             subscriber: req.body.userData.id
-        });
+        });        
         res.status(200).send({ status: 200, message: subscriptions, error: null });
     })
 
@@ -46,10 +46,10 @@ export = (hypersign) => {
         if(!application) throw new Error(`No application found with did = ${did}`);
         
         logger.debug('verify::updateAuthCount: application = ', application.did);
-        let authCounts = application.authCounts == "" ? 0 : parseInt(application.authCounts);
+        let authCounts = application.authCounts;
         logger.debug('verify::updateAuthCount: application authCounts = ', authCounts);
         authCounts = authCounts + 1;
-        await applicationObj.update({ authCounts: authCounts.toString() })
+        await applicationObj.update({ authCounts: authCounts })
 
 
         // Update subscription
@@ -59,10 +59,10 @@ export = (hypersign) => {
         const subscription = await subscriptionObj.fetchOne();
         if(!subscription) throw new Error(`No subscription found with owner did = ${owner}`);
 
-        let authCount = subscription.authCount == "" ? 0 : parseInt(subscription.authCount);
+        let authCount = subscription.authCount
         authCount = authCount + 1;
         logger.debug('verify::updateAuthCount: subscription authCount = ', authCount);
-        await subscriptionObj.update({ authCount: authCount.toString() });
+        await subscriptionObj.update({ authCount });
     }
 
     router.post('/verify', async (req, res) => {

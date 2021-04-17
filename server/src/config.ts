@@ -1,119 +1,146 @@
-import env from 'dotenv'
-import sqlite from 'sqlite3';
-import path from 'path';
-import fs from 'fs'
-import HypersignSsiSDK  from 'hs-ssi-sdk';
+import env from "dotenv";
+import path from "path";
+import fs from "fs";
+import HypersignSsiSDK from "hs-ssi-sdk";
+import mongoose, { PromiseProvider } from "mongoose";
+import { homedir } from "os";
+import winston from "winston";
 
-const log = require('simple-node-logger');
+const envPath = path.resolve(__dirname, "../", process.env.NODE_ENV + ".env");
 
+if (fs.existsSync(envPath)) {
+  env.config({
+    path: envPath,
+  });
+} else {
+  env.config();
+}
 
-env.config();
+const dataDIR = process.env.DATA_DIR
+  ? process.env.DATA_DIR
+  : path.join(homedir(), "developerDashboard");
+if (!fs.existsSync(dataDIR)) fs.mkdirSync(dataDIR);
 
-const log_dir = path.resolve(__dirname,'../log')
-const db_dir = path.resolve(__dirname,'../db')
+let logger;
+function setupLogger() {
+  const logDIR = path.join(dataDIR, "./log");
+  if (!fs.existsSync(logDIR)) fs.mkdirSync(logDIR);
 
-if(!fs.existsSync(log_dir)) fs.mkdirSync(log_dir)
-if(!fs.existsSync(db_dir)) fs.mkdirSync(db_dir)
+  const { combine, timestamp, printf } = winston.format;
+  const customLogFormat = printf(({ level, message, timestamp }) => {
+    return `${timestamp} [${level}] ${message}`;
+  });
+  const logFilePath = path.join(logDIR, "developerDashboard.log");
+  logger = winston.createLogger({
+    level: process.env.LOG_LEVEL || "info",
+    format: combine(timestamp(), customLogFormat),
+    transports: [
+      new winston.transports.File({
+        filename: path.join(logDIR, "developerDashboard-error.log"),
+        level: "error",
+      }),
+      new winston.transports.File({ filename: logFilePath }),
+    ],
+  });
+  if (process.env.NODE_ENV !== "production") {
+    logger.add(
+      new winston.transports.Console({
+        format: winston.format.simple(),
+      })
+    );
+  }
 
-// LOGGING
-const log_path = path.resolve(__dirname, process.env.LOG_FILEPATH || 'ssi-infra.log')
-const logger = log.createSimpleLogger({
-    logFilePath: log_path,
-    timestampFormat: process.env.LOG_TIMESTAMP_FORMAT || 'YYYY-MM-DD HH:mm:ss.SSS'
-})
-logger.setLevel(process.env.LOG_LEVEL || 'info')
+  logger.info(`Log filepath is set to ${logFilePath}`);
+}
+setupLogger();
 
 const port = process.env.PORT || 5006;
 const host = process.env.HOST || "localhost";
 const hostnameurl = process.env.HOSTNAMEURL || `http://${host}:${port}`;
 
+
+const keysDIR = path.join(dataDIR, "./keys");
+  if (!fs.existsSync(keysDIR)) fs.mkdirSync(keysDIR);
+
 const bootstrapConfig = {
-    keysfilePath : path.join(__dirname + '/keys.json'),
-    schemafilePath : path.join(__dirname + '/schema.json'),
-    hypersignFilePath : path.join(__dirname + '/hypersign.json')
+  keysfilePath: path.join(keysDIR + "/keys.json"),
+  schemafilePath: path.join(keysDIR + "/schema.json"),
+  hypersignFilePath: process.env.NODE_ENV == "production" ? path.join(__dirname  + "/hypersign.json") : path.join(__dirname  + "/../" + "/hypersign.json"),
 }
 
-// DATABASE
-// Ref: https://www.sqlitetutorial.net/sqlite-nodejs/
-const db_file_path = process.env.DATABASE_FILEPATH || 'ssi.db'; 
-const db_path = path.resolve(__dirname, db_file_path)
-const db =  new sqlite.Database(db_path, (err) => {
-    if(err){
-        logger.error(`SQLite db error:  ${err.message}`)
-    }else{
-        logger.info(`Connected to ssi-infa database. DB path = ${db_path}`)
-    }
-});
+if (!fs.existsSync(dataDIR)) fs.mkdirSync(dataDIR);
 
-// DID Related: 
+//DATABASE
+const dbConnUrl =
+  process.env.DB_URL && process.env.DB_URL != ""
+    ? process.env.DB_URL
+    : "";
+if (dbConnUrl) {
+  mongoose.connect(
+    dbConnUrl,
+    { useNewUrlParser: true, useUnifiedTopology: true },
+    (err) => {
+      if (err) {
+        console.error("Error: could not connect to mongo database");
+        return
+      } else {
+        console.log("Connected to mongo database");
+      }
+    }
+  );
+}
+
+// DID Related:
 // TODO: Not required for this project. so remove
 const did = {
-    sheme : process.env.DID_SCHEME || 'did',
-    method : process.env.DID_METHOD_NAME || 'hypersign',
-}
+  sheme: process.env.DID_SCHEME || "did",
+  method: process.env.DID_METHOD_NAME || "hypersign",
+};
 
-const jwtSecret = process.env.JWT_SECRET || 'secretKey'
-const jwtExpiryInMilli = 240000
+const jwtSecret = process.env.JWT_SECRET || "secretKey";
+const jwtExpiryInMilli = 240000;
 
 const nodeServer = {
-    baseURl: process.env.NODE_SERVER_BASE_URL ||  "http://localhost:5000/",//"https://ssi.hypermine.in/core/",
-    didCreateEp: process.env.NODE_SERVER_DID_CREATE_EP || "api/did/register",
-    schemaCreateEp: process.env.NODE_SERVER_SCHEMA_CREATE_EP || "api/schema/create",
-    schemaGetEp: process.env.NODE_SERVER_SCHEMA_GET_EP || "api/v1/schema",
-    schemaListEp: process.env.NODE_SERVER_SCHEMA_LIST_EP || "api/schema/list",
-}
+  baseURl: process.env.NODE_SERVER_BASE_URL || "http://localhost:5000/",
+  schemaGetEp: process.env.NODE_SERVER_SCHEMA_GET_EP || "api/v1/schema",
+};
 
-const mail = {
-   host: process.env.MAIL_HOST || "smtp.gmail.com",
-   port: process.env.MAIL_PORT || 465 ,
-   user: process.env.MAIL_USERNAME || "example@gmail.com",
-   pass: process.env.MAIL_PASSWORD || "ExamplePassword1@",
-   name: process.env.MAIL_NAME || "Hypermine Admin",
-}
-
-
-// const options = { nodeUrl: `${nodeServer.baseURl}`,  didScheme:  "did:hs"}
-// const hypersignSDK = {
-//     did: hsdk.did(options),
-//     credential: hsdk.credential(options)
-// }
-
-const hypersignSDK = new HypersignSsiSDK(
-    { nodeUrl: nodeServer.baseURl } // Hypersign node url
-  );
-
+const hypersignSDK = new HypersignSsiSDK({ nodeUrl: nodeServer.baseURl });
 
 const hs_schema = {
-    APP_NAME: process.env.SCHEMA_NAME || 'Hypersign Developer Credential',
-    ATTRIBUTES: process.env.SCEHMA_ATTRIBUTES || ["name",  "did",  "owner",  "schemaId",  "serviceEp", "subscriptionId", "planId", "planName"],
-    DESCRIPTION: process.env.SCEHMA_DESCRIPTION || "Credential to access Hypersign Authentication APIs",
-    HS_AUTH_SERVER_SCHEMA: "sch_3008d429-47fa-41fb-a2b0-6d9c294553d2"
-}
+  APP_NAME: process.env.SCHEMA_NAME || "Hypersign Developer Portal",
+  ATTRIBUTES: process.env.SCEHMA_ATTRIBUTES || [
+    "name",
+    "did",
+    "owner",
+    "schemaId",
+    "serviceEp",
+    "subscriptionId",
+    "planId",
+    "planName",
+  ],
+  DESCRIPTION:
+    process.env.SCEHMA_DESCRIPTION ||
+    "Credential to access Hypersign Authentication APIs",
+  HS_AUTH_SERVER_SCHEMA:  process.env.HS_AUTH_SERVER_SCHEMA || "sch_3008d429-47fa-41fb-a2b0-6d9c294553d2",
+};
 
-        
-
-        
-const challengeExpTime = 5 // time at which session challenge will expire (in minutes)
-
-
-const TEMP_CREDENTIAL_DIR = path.join(__dirname + "/../" + "temp/");
-
-
-
-export  {
-    port,
-    host,
-    logger,
-    db,
-    did,
-    jwtSecret,
-    jwtExpiryInMilli,
-    nodeServer,
-    mail,
-    bootstrapConfig,
-    hypersignSDK,
-    challengeExpTime,
-    hs_schema,
-    TEMP_CREDENTIAL_DIR,
-    hostnameurl
-}
+const challengeExpTime = 5; // time at which session challenge will expire (in minutes)
+const TEMP_CREDENTIAL_DIR = path.join(dataDIR, "./credential");
+const serviceEndpoint = process.env.DEVELOPER_PORTAL_SERVICE_ENDPOINT || hostnameurl
+export {
+  port,
+  host,
+  logger,
+  did,
+  jwtSecret,
+  jwtExpiryInMilli,
+  nodeServer,
+  bootstrapConfig,
+  hypersignSDK,
+  challengeExpTime,
+  hs_schema,
+  TEMP_CREDENTIAL_DIR,
+  hostnameurl,
+  serviceEndpoint
+};

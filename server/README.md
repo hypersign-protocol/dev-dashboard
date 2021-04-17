@@ -1,12 +1,32 @@
 ## Server
 
+
+### Intallation
+
 ```
+cd dashboard/server
 npm i
+```
+
+### Env=production
+
+```sh
 npm run build
-npm run newdb
-npm run bootstrap
+npm run bootstap
 npm run start
 ```
 
-The server Will run on port `:4006`
+Note: make sure you have `production.env` file. 
+
+### Env=development
+
+
+```sh
+npm run bootstap:dev
+npm run dev
+```
+
+Note: make sure you have `development.env` file.
+
+
 
