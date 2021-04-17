@@ -68,7 +68,7 @@ router.beforeEach((to, from, next) => {
     if (to.matched.some(record => record.meta.requiresAuth)) {
         const authToken = localStorage.getItem('authToken');
         if (authToken) {
-            const url = `${config.studioServer.BASE_URL}protected`
+            const url = `${config.studioServer.BASE_URL}hs/api/v2/auth/protected`
                 //console.log(url)
                 //console.log('...............')
             fetch(url, {

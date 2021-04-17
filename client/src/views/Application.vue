@@ -351,7 +351,7 @@ img {
                       <label
                         ><a
                           v-bind:href="
-                            'https://ssi.hypermine.in/core/api/did/resolve/' +
+                            `${$config.nodeServer.BASE_URL}api/v1/did/` +
                             app.did
                           "
                           target="_blank"
@@ -366,7 +366,7 @@ img {
                       <label
                         ><a
                           v-bind:href="
-                            'https://ssi.hypermine.in/core/api/schema/get/' +
+                            `${$config.nodeServer.BASE_URL}api/v1/schema/` +
                             app.schemaId
                           "
                           target="_blank"
@@ -455,10 +455,7 @@ export default {
       errors: [],
       basic: {
         name: "",
-        description: "",
         serviceEndpoint: "",
-        did: "",
-        logoUrl: "",
       },
       advance: {
         schemaId: "",
@@ -503,13 +500,36 @@ export default {
     toggle() {
       this.open = !this.open;
     },
+    formatSchemaString(schemaStr){
+      const sJson =  schemaStr;
+        if(sJson){
+          const schemaObj =  JSON.parse(sJson);
+          const schema = {
+            id: "",
+            credentialName: "",
+            version: "",
+            attributes: [],
+            description: ""
+          }
+
+          schema.id = schemaObj.id;
+          schema.credentialName = schemaObj.name;
+          schema.version = schemaObj.modelVersion;
+          schema.attributes = schemaObj.schema.required;
+          schema.description = schemaObj.schema.description;
+          return schema;
+      }else{
+        return null
+      }
+    },
     async getList(type) {
       let url = "";
       let options = {};
       if (type === "SCHEMA") {
-        url = `${this.$config.nodeServer.BASE_URL}${this.$config.nodeServer.SCHEMA_LIST_EP}`;
+        url = `${this.$config.studioServer.BASE_URL}hs/api/v2/schema/get`;
         options = {
           method: "GET",
+          headers: { Authorization: `Bearer ${this.authToken}` },
         };
       } else {
         url = `${this.$config.studioServer.BASE_URL}hs/api/v2/app`;
@@ -527,13 +547,15 @@ export default {
       if (type === "SCHEMA") {
         const schemaList = j.message;
         if (schemaList && schemaList.length > 0) {
-          schemaList.forEach((s) => {
-            if (s.owner != this.user.id) return;
-            this.schemaMap[s.id] = JSON.parse(s.attributes);
-            this.selectOptions.push({
-              value: s.id,
-              text: `${s.credentialName} | ${s.id}`,
-            });
+          schemaList.forEach((element) => {
+            const s  = this.formatSchemaString(element.schemaString)
+            if(s){
+              this.schemaMap[s.id] = s.attributes;
+              this.selectOptions.push({
+                value: s.id,
+                text: `${s.credentialName} | ${s.id}`,
+              });
+            }            
           });
         }
       } else {
@@ -570,8 +592,8 @@ export default {
         this.errors.push("Invalid service endpoint url");
       }
 
-      if (this.basic.logoUrl != "" && !isWebUri(this.basic.logoUrl))
-        this.errors.push("Invalid logo url");
+      // if (this.basic.logoUrl != "" && !isWebUri(this.basic.logoUrl))
+      //   this.errors.push("Invalid logo url");
 
       if (this.errors.length > 0) return false;
       else return true;
@@ -595,7 +617,9 @@ export default {
             advance: {},
           };
 
+
           Object.assign(data.basic, this.basic);
+
           data.advance.schemaId = this.selected ? this.selected : "";
           const resp = await fetch(createAppUrl, {
             method: "POST",

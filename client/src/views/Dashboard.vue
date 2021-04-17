@@ -35,7 +35,7 @@
 </style>
 <template>
    <div class="home  marginLeft marginRight">
-     <h3 class="leftAlign">Welcome, {{user.Name}} !</h3>
+     <h3 class="leftAlign">Welcome, {{user.name}} !</h3>
      <div class="row">
         <div class="col-md-6">
             <Profile/>

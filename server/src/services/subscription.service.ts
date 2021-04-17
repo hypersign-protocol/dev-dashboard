@@ -1,23 +1,28 @@
-import ISubscription  from '../models/ISubscription';
-import IPricing from '../models/IPricing';
-import { DBService, SchemaType } from './db.service';
 import { Pricing } from './pricing.service';
-import { hypersignSDK } from '../config';
-export class Subscription implements ISubscription{
+import SubscriptionModel, { ISubscription } from '../models/subscription'
+import  { IPricing } from '../models/pricing'
+
+export class Subscription{
     id: string;
     planId: string; 
     subscriber: string;
-    dbSerice: DBService;
-    prefix: string;
-
+    
     subscriptionDate: string;
     planName: string;
-    authCount: string; // how much has he exhausted
-    maxAuthCount: string; // comes from plan
-    numberOfApps: string;
-    maxAppsCounts: string; // comes from plan
+    authCount: number; // how much has he exhausted
+    maxAuthCount: number; // comes from plan
+    numberOfApps: number;
+    maxAppsCounts: number; // comes from plan
 
-    constructor({ id= "", planId = "", subscriber = "", subscriptionDate = "", planName = "", authCount ="", numberOfApps = "" ,maxAuthCount = "", maxAppsCounts = ""}){
+    constructor({ id= "", 
+    planId = "",
+    subscriber = "",
+    subscriptionDate = "",
+    planName = "",
+    authCount = 0, 
+    numberOfApps = 0, 
+    maxAuthCount = 0, 
+    maxAppsCounts = 0}){
         this.id = id;
         this.planId = planId;
         this.subscriber = subscriber;
@@ -29,23 +34,12 @@ export class Subscription implements ISubscription{
         this.numberOfApps = numberOfApps;
         this.maxAppsCounts = maxAppsCounts;
     
-        this.dbSerice = new DBService();
-        this.prefix = "subs_";
-    }
-
-    toString(user: ISubscription){
-        return JSON.stringify(user);
-    }
-
-    private getId(){
-        const uuid = this.prefix + hypersignSDK.did.getChallange();
-        return uuid.substring(0, 20)
     }
 
     async create(){
 
         const pricing =  new Pricing({});
-        const plans = await pricing.fetch({id: this.planId});
+        const plans = await pricing.fetch({planId: this.planId});
         const requiredPlan: IPricing = plans[0] as IPricing;
 
         this.maxAppsCounts = requiredPlan.maxAppsCount;
@@ -54,32 +48,39 @@ export class Subscription implements ISubscription{
 
         this.subscriptionDate =  (new Date()).toUTCString(); // UTC: GMT
 
-        this.id = this.getId();
-
-        const app = await this.dbSerice.add(SchemaType.Subscription, this);
-        return app;
+        const subs: ISubscription =  await SubscriptionModel.create({
+            ...this
+        }) 
+        
+        return subs;
     }
 
     async fetch(obj = {}){    
         if(Object.keys(obj).length === 0){
             obj = {subscriber: this.subscriber}
         }
-        return await this.dbSerice.getAll(SchemaType.Subscription, obj);
+        return await SubscriptionModel.where(obj).find({});
     }
 
     async update(params = {}, where = {}){
 
         if(Object.keys(where).length === 0){
-            where = {id: this.id}
+            where = {_id: this.id}
         }
 
-        return await this.dbSerice.update(SchemaType.Subscription, params, where)
+
+        const project: ISubscription = (await SubscriptionModel.findOneAndUpdate(
+            where,
+            params
+          )) as ISubscription;
+        return project;
     }
 
     async fetchOne(obj = {}): Promise<ISubscription>{    
         if(Object.keys(obj).length === 0){
             obj = {subscriber: this.subscriber}
         }
-        return await this.dbSerice.getOne(SchemaType.Subscription, obj);
+        const subs: ISubscription =  (await SubscriptionModel.where(obj).findOne()) as ISubscription;
+        return  subs;
     }
 }
