@@ -7,7 +7,7 @@
     "scripts": {
         "setup": "npm run setEnv && npm run build && npm run newdb",
         "newdb": "npm run start -- --newdb",
-        "start": "NODE_ENV=production node dist/index.js",
+        "start": "NODE_ENV=development node dist/index.js",
         "prod": "NODE_ENV=production node dist/api.bundle.js",
         "dev": "NODE_ENV=development nodemon src/index.ts",
         "build": "rimraf dist && tsc -p .",
