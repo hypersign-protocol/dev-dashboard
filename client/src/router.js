@@ -1,13 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import PKIIdLogin from './views/PKIIdLogin.vue';
 import config from './config';
-import Application from './views/Application.vue';
-import Subscription from './views/Subscription.vue';
-import Dashboard from './views/Dashboard.vue';
 import fetch from 'node-fetch';
-import Schema from './views/Schema.vue';
-
 Vue.use(Router)
 
 const router = new Router({
@@ -27,12 +21,12 @@ const router = new Router({
         {
             path: '/studio/login',
             name: 'PKIIdLogin',
-            component: PKIIdLogin
+            component: () => import(/* webpackChunkName: "login" */ './views/PKIIdLogin.vue'),
         },
         {
             path: '/studio/dashboard',
             name: 'dashboard',
-            component: Dashboard,
+            component: () => import(/* webpackChunkName: "dashboard" */ './views/Dashboard.vue'),
             meta: {
                 requiresAuth: true
             }
@@ -40,7 +34,7 @@ const router = new Router({
         {
             path: '/studio/schema',
             name: 'schema',
-            component: Schema,
+            component: () => import(/* webpackChunkName: "Schema" */ './views/Schema.vue'),
             meta: {
                 requiresAuth: true
             }
@@ -48,7 +42,7 @@ const router = new Router({
         {
             path: '/studio/apps',
             name: 'apps',
-            component: Application,
+            component: () => import(/* webpackChunkName: "Application" */ './views/Application.vue'),
             meta: {
                 requiresAuth: true
             }
@@ -56,7 +50,7 @@ const router = new Router({
         {
             path: '/studio/subscription',
             name: 'presentation',
-            component: Subscription,
+            component: () => import(/* webpackChunkName: "Subscription" */ './views/Subscription.vue'),
             meta: {
                 requiresAuth: false
             }
