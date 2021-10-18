@@ -107,6 +107,8 @@ const nodeServer = {
   schemaGetEp: process.env.NODE_SERVER_SCHEMA_GET_EP || "api/v1/schema",
 };
 
+console.log(nodeServer.baseURl )
+
 const hypersignSDK = new HypersignSsiSDK({ nodeUrl: nodeServer.baseURl });
 
 const hs_schema = {

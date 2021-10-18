@@ -46,8 +46,11 @@ export default async function app() {
     app.use("/hs/api/v2/price", routes.pricing());
     app.use("/hs/api/v2/subscription", routes.subscription(hypersign));
     app.use("/hs/api/v2/schema", routes.schema(hypersign));
-        
+      
 
-    server.listen(port, () => logger.info(`The server is running on port ${port}`));
+logger.info(
+  "Before server reserart"
+)
+    server.listen(port, () => console.log(`The server is running on port ${port}`));
 
 }

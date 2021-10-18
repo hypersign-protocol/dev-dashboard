@@ -13,6 +13,7 @@ npm i
 ```sh
 npm run build
 npm run bootstap
+npm run setupPlan
 npm run start
 ```
 
@@ -23,6 +24,7 @@ Note: make sure you have `production.env` file.
 
 ```sh
 npm run bootstap:dev
+npm run setupPlan:dev
 npm run dev
 ```
 

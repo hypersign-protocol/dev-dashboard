@@ -5,7 +5,7 @@ export = () => {
 
     const router = Router();
 
-    router.post('/create', async (req, res) => {
+    router.post('/', async (req, res) => {
         const plan = req.body;
         plan.offerings = JSON.stringify(plan.offerings);
         const newPrice: IPricing = await PricingModel.create({

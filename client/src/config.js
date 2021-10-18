@@ -4,7 +4,7 @@ const hsdk = require('lds-sdk')
 const config = {
     studioServer: {
         BASE_URL: EnvProvider.value('STUDIO_SERVER_BASE_URL'),
-        WEBSOCKET_URL: EnvProvider.value('WEBSOCKET_SERVER_URL') || 'wss://ssi.hypermine.in/developerws/',
+        WEBSOCKET_URL: EnvProvider.value('WEBSOCKET_SERVER_URL'),
         CRED_LIST_EP: EnvProvider.value('STUDIO_SERVER_CRED_LIST_EP') || "api/credential/list",
         CRED_ISSUE_EP: EnvProvider.value('STUDIO_SERVER_CRED_ISSUE_EP') || "api/credential/issue",
         AUTH_CHALLENGE_EP: EnvProvider.value('STUDIO_SERVER_AUTH_CHALLENGE_EP') || "api/auth/challenge",
@@ -18,6 +18,7 @@ const config = {
         SCHEMA_CREATE_EP: EnvProvider.value('NODE_SERVER_SCHEMA_CREATE_EP') || "api/schema/create",
         DID_RESOLVE_EP: EnvProvider.value('NODE_SERVER_DID_RERSOLVE_EP') || "api/did/resolve/"
     },
+    webWalletAddress: EnvProvider.value('WEBWALLET_URL'),
     explorer: {
         BASE_URL: EnvProvider.value('EXPLORER_BASE_URL'),
         NEW_DID_EP: EnvProvider.value('EXPLORER_NEW_DID_EP') || "newdid"
