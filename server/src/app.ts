@@ -7,9 +7,29 @@ import http from 'http';
 import HypersignAuth from 'hypersign-auth-js-sdk';
 import routes from './routes';
 
-export default function app() {
+import httpsLocalhost from 'https-localhost';
+import https from 'https';
+
+function getCerts(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      httpsLocalhost()
+        .getCerts()
+        .then((cert) => {
+          resolve(cert);
+        })
+        .catch((e) => {
+          reject(e);
+        });
+    });
+  }
+
+  
+
+export default async function app() {
     const app = express();
-    const server = http.createServer(app);
+    const cert = await getCerts();
+
+    const server = https.createServer(cert, app);
     const hypersign = new HypersignAuth(server);
     
 

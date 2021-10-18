@@ -1,6 +1,8 @@
 
 dist 
-
+jvjr-entrypoint.sh
+Dockerfile-jvjr
+jvjr-env.json
 ssi.db
 *.log
 *.db

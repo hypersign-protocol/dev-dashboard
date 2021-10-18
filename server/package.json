@@ -28,6 +28,7 @@
         "dotenv": "^8.2.0",
         "express": "^4.17.1",
         "hs-ssi-sdk": "^5.0.1",
+        "https-localhost": "^4.7.0",
         "hypersign-auth-js-sdk": "^2.0.2",
         "jsonwebtoken": "^8.5.1",
         "mongoose": "^5.12.3",
@@ -35,8 +36,8 @@
         "nodemailer": "^6.4.11",
         "qrcode": "^1.4.4",
         "sha.js": "^2.4.11",
-        "winston": "^3.3.3",
-        "uuid": "^8.3.2"
+        "uuid": "^8.3.2",
+        "winston": "^3.3.3"
     },
     "devDependencies": {
         "@types/express": "^4.17.6",

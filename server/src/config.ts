@@ -88,6 +88,8 @@ if (dbConnUrl) {
       }
     }
   );
+}else{
+  console.log("WARN:: No DB Url set")
 }
 
 // DID Related:

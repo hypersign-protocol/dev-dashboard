@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/jquery.qrcode@1.0.3/jquery.qrcode.min.js"></script>
     </head>
     <body>
@@ -14,8 +14,9 @@
 
 <script>
     $(document).ready(function() {
-        let ws = new WebSocket('ws://192.168.43.225:4006');
+        let ws = new WebSocket('wss://localhost:5006');
         ws.onmessage = function({data }) {
+            console.log(data)
             let messageData = JSON.parse(data);
             $("#qrcode").html("");
             if (messageData.op == 'init') {
