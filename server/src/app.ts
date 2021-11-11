@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
-import { port, logger } from './config';
+import { port, logger, httpsEnabled } from './config';
 import http from 'http';
 import HypersignAuth from 'hypersign-auth-js-sdk';
 import routes from './routes';
@@ -24,12 +24,18 @@ function getCerts(): Promise<any> {
   }
 
   
-
+  
 export default async function app() {
+    let server;
     const app = express();
-    const cert = await getCerts();
 
-    const server = https.createServer(cert, app);
+    if (httpsEnabled == 'true') {
+      const cert = await getCerts();
+      server = https.createServer(cert, app);
+    } else {
+      server = http.createServer(app);
+    }
+    
     const hypersign = new HypersignAuth(server);
     
 
@@ -48,9 +54,9 @@ export default async function app() {
     app.use("/hs/api/v2/schema", routes.schema(hypersign));
       
 
-logger.info(
-  "Before server reserart"
-)
+    logger.info(
+      "Before server reserart"
+    )
     server.listen(port, () => console.log(`The server is running on port ${port}`));
 
 }
