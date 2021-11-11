@@ -75,6 +75,8 @@ export async function generateHypersignJson (basic = {}, advance = {}, ownerDid,
         keys: {},
         schemaId: hs_schema.HS_AUTH_SERVER_SCHEMA,
         networkUrl: nodeServer.baseURl,
+        isSubcriptionEnabled: false,
+        socketConnTimeOut: 120000,
         mail: {
             host: "",
             port: 0,
@@ -109,6 +111,7 @@ export async function generateHypersignJson (basic = {}, advance = {}, ownerDid,
         name: tempApp.name,
         did: tempApp["did"],
         owner: tempApp["owner"],
+        // If the SchemaId is not set by developer, then take the default schema Id
         schemaId: hypersignJSON.schemaId && hypersignJSON.schemaId != "" ? hypersignJSON.schemaId: hs_schema.HS_AUTH_SERVER_SCHEMA,
         serviceEp: tempApp.serviceEndpoint
     });
