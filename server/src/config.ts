@@ -132,6 +132,10 @@ const hs_schema = {
 const challengeExpTime = 5; // time at which session challenge will expire (in minutes)
 const TEMP_CREDENTIAL_DIR = path.join(dataDIR, "./credential");
 const serviceEndpoint = process.env.DEVELOPER_PORTAL_SERVICE_ENDPOINT || hostnameurl
+
+const httpsEnabled = process.env.ENABLE_HTTPS || true;
+
+
 export {
   port,
   host,
@@ -146,5 +150,6 @@ export {
   hs_schema,
   TEMP_CREDENTIAL_DIR,
   hostnameurl,
-  serviceEndpoint
+  serviceEndpoint,
+  httpsEnabled
 };
