@@ -142,6 +142,11 @@ export default {
           path: "/studio/subscription",
           isShow: true,
         },
+        { 
+          name: "Docs",  
+          path: "",
+          isShow: true,
+        },
         {
           name: "Logout",
           path: "/login",
@@ -159,7 +164,14 @@ export default {
     },
     goToNextPage(route){
       const r = this.menu.find(x => x.name === route)
-      if(r.name === "Logout") this.logout()
+      if(r.name === "Logout") this.logout();
+
+      if(r.name === "Docs") {
+
+        window.open("https://docs.hypersign.id/developer/developer-dashboard")
+        return;
+      }
+
       this.$router.push(r.path)
       if(this.$route.params.nextUrl != null){
                     this.$router.push(this.$route.params.nextUrl)
