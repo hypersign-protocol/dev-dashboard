@@ -14,7 +14,7 @@
 
 <template>
   <div class="error">
-    <p>Fields validation:</p>
+    <p>Field validations:</p>
     <ul>
       <li v-for="error in errors" :key="error">{{ error }}</li>
     </ul>

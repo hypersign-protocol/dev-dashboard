@@ -265,9 +265,17 @@ export default {
         _this.value = JSON.stringify(messageData.data);
       } else if (messageData.op == "end") {
         _this.connection.close();
-        const authorizationToken = messageData.data.token;
+
+         const { accessToken, refreshToken } = messageData.data.hypersign.data;
+
+        // console.log("Emitting authentoken event")
+
+        
+
         // console.log(authorizationToken);
-        localStorage.setItem("authToken", authorizationToken);
+         localStorage.setItem("authToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+        
 
         if (localStorage.getItem("authToken") != null) {
           if (this.walletWindow) {

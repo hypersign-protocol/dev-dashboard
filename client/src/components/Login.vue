@@ -88,12 +88,15 @@ export default {
         _this.socketMessage = null;
       } else if (messageData.op == "end") {
         _this.connection.close();
-        const authorizationToken = messageData.data.token;
+
+        console.log(messageData.data)
+        const { accessToken, refreshToken } = messageData.data.hypersign.data;
 
         // console.log("Emitting authentoken event")
 
-        localStorage.setItem("authToken", authorizationToken);
-        this.$emit("AuthTokenUpdateEvent", authorizationToken);
+        localStorage.setItem("authToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+        this.$emit("AuthTokenUpdateEvent", accessToken);
 
 
       } else if (messageData.op == "reload") {

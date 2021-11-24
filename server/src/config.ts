@@ -56,7 +56,7 @@ setupLogger();
 
 const port = process.env.PORT || 5006;
 const host = process.env.HOST || "localhost";
-const hostnameurl = process.env.HOSTNAMEURL || `http://${host}:${port}`;
+const hostnameurl = process.env.HOSTNAMEURL || `http://${host}:${port}/`;
 
 
 const keysDIR = path.join(dataDIR, "./keys");
@@ -118,7 +118,9 @@ const hs_schema = {
     "did",
     "owner",
     "schemaId",
-    "serviceEp",
+    "baseUrl",
+    "authResourcePath",
+    "verifyResourcePath",
     "subscriptionId",
     "planId",
     "planName",
@@ -131,7 +133,8 @@ const hs_schema = {
 
 const challengeExpTime = 5; // time at which session challenge will expire (in minutes)
 const TEMP_CREDENTIAL_DIR = path.join(dataDIR, "./credential");
-const serviceEndpoint = process.env.DEVELOPER_PORTAL_SERVICE_ENDPOINT || hostnameurl
+let serviceEndpoint = process.env.DEVELOPER_PORTAL_SERVICE_ENDPOINT || hostnameurl
+serviceEndpoint = serviceEndpoint.endsWith("/") ? serviceEndpoint.substring(0, serviceEndpoint.length - 1) : serviceEndpoint;
 
 const httpsEnabled = process.env.ENABLE_HTTPS || true;
 

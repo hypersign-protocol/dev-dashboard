@@ -7,10 +7,8 @@ export = (hypersign) => {
 
     router.post('/', hypersign.authenticate.bind(hypersign), async (req, res) => {
         try {
-            const dataFromHypersign = req.body.hsUserData;
-            console.log(dataFromHypersign)
-            const userModel = dataFromHypersign.hs_userdata;
-            if (!userModel) throw new Error(`Could not fetch usermodel from Hypersign auth`)
+            const { data } = req.body.hypersign;
+            if (!data.user) throw new Error(`Could not fetch usermodel from Hypersign auth`)
             res.status(200).send({ status: 200, message: "Success", error: null });
 
         } catch (e) {
@@ -24,14 +22,14 @@ export = (hypersign) => {
     // this api gets called before each route in frontend
     router.post('/protected', hypersign.authorize.bind(hypersign), async (req, res) => {
         try {
-            const user = req.body.userData;
+            const user = req.body.hypersign.data;
             const pricing = new Subscription({});
             const subscriptions = await pricing.fetch({
-                subscriber: user.id
+                subscriber: user.email
             });
             const app = new Application({});
             const appList = await app.fetch({
-                owner: user.id
+                owner: user.email
             });
 
             if(subscriptions.length > 0){
