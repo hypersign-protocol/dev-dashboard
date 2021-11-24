@@ -29,7 +29,7 @@
         "express": "^4.17.1",
         "hs-ssi-sdk": "^5.0.1",
         "https-localhost": "^4.7.0",
-        "hypersign-auth-js-sdk": "^2.0.7",
+        "hypersign-auth-js-sdk": "^3.0.0",
         "jsonwebtoken": "^8.5.1",
         "mongoose": "^5.12.3",
         "node-fetch": "^2.6.1",
