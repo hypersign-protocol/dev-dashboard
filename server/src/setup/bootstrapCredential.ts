@@ -64,11 +64,12 @@ export async function registerSchema1 ({name, description, author, attributes, s
 }
 
 
-export async function generateHypersignJson (basic = {}, advance = {}, ownerDid, storeHypersign = false) {
+export async function generateHypersignJson (basic = {}, advance = {}, jwt = {}, rft = {}, ownerDid, storeHypersign = false) {
 
     const tempApp = {
         name: "",
         serviceEndpoint: "",
+        authResourcePath: "",
         owner: ""
     }
     let hypersignJSON = {
@@ -88,10 +89,16 @@ export async function generateHypersignJson (basic = {}, advance = {}, ownerDid,
             secret: "",
             expiryTime: 0,
         },
+        rft: {
+            secret: "",
+            expiryTime: 0,
+        },
         appCredential: {}
     }
 
     Object.assign(hypersignJSON, advance);
+    Object.assign(hypersignJSON.jwt, { ...jwt });
+    Object.assign(hypersignJSON.rft, { ...rft });
     Object.assign(tempApp, {...basic});
     tempApp["owner"] = ownerDid // userData.id;
     
@@ -104,7 +111,11 @@ export async function generateHypersignJson (basic = {}, advance = {}, ownerDid,
 
     // In case jwt configuration is not set by developer.
     if(hypersignJSON.jwt.secret == "") hypersignJSON.jwt.secret = hypersignSDK.did.getChallange();
-    if(hypersignJSON.jwt.expiryTime == 0) hypersignJSON.jwt.expiryTime = 120000
+    if(hypersignJSON.jwt.expiryTime == 0) hypersignJSON.jwt.expiryTime = 900000
+
+    // In case refresh token configuration is not set by developer.
+    if(hypersignJSON.rft.secret == "") hypersignJSON.rft.secret = hypersignSDK.did.getChallange();
+    if(hypersignJSON.rft.expiryTime == 0) hypersignJSON.rft.expiryTime = 86400000
 
     // step2: Store app realated configuration in db
     const app = new Application({
@@ -113,7 +124,9 @@ export async function generateHypersignJson (basic = {}, advance = {}, ownerDid,
         owner: tempApp["owner"],
         // If the SchemaId is not set by developer, then take the default schema Id
         schemaId: hypersignJSON.schemaId && hypersignJSON.schemaId != "" ? hypersignJSON.schemaId: hs_schema.HS_AUTH_SERVER_SCHEMA,
-        serviceEp: tempApp.serviceEndpoint
+        baseUrl: tempApp.serviceEndpoint,
+        authResourcePath: tempApp.authResourcePath ? tempApp.authResourcePath : "",
+        verifyResourcePath: advance["verifyResourcePath"] ? advance["verifyResourcePath"] : "",    
     });
     const appData = await app.create();
 
@@ -151,12 +164,13 @@ export async function bootstrap(){
             name: hs_schema.APP_NAME,
             description: hs_schema.DESCRIPTION,
             serviceEndpoint: serviceEndpoint,
+            authResourcePath: "/hs/api/v2/auth",
             did: "",
             logoUrl: ""
         },
         advance: {}
     }    
-    await generateHypersignJson(config.basic, config.advance, ownerDid, true);
+    await generateHypersignJson(config.basic, config.advance, {}, {}, ownerDid, true);
     console.log('Done')
     return; 
 }

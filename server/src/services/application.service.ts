@@ -11,14 +11,18 @@ export class Application{
   did: string;
   owner: string;
   schemaId: string;
-  serviceEp: string;
+  baseUrl: string;
   authCounts: number;
+  authResourcePath: string;
+  verifyResourcePath: string;
   constructor({
     name = "",
     did = "",
     owner = "",
     schemaId = "",
-    serviceEp = "",
+    baseUrl = "",
+    authResourcePath = "",
+    verifyResourcePath = "",
     authCounts = 0,
   }) {
     this.id = did;
@@ -26,8 +30,10 @@ export class Application{
     this.did = did;
     this.owner = owner;
     this.schemaId = schemaId;
-    this.serviceEp = serviceEp;
+    this.baseUrl = baseUrl;
     this.authCounts = authCounts;
+    this.authResourcePath = authResourcePath
+    this.verifyResourcePath = verifyResourcePath 
   }
 
   async create() {
@@ -64,7 +70,9 @@ export class Application{
       did: this.did,
       owner: this.owner,
       schemaId: this.schemaId,
-      serviceEp: this.serviceEp,
+      baseUrl: this.baseUrl,
+      authResourcePath: this.authResourcePath,
+      verifyResourcePath: this.verifyResourcePath,
       subscriptionId: subscriptions[0] ? subscriptions[0]["id"] : "",
       planId: subscriptions[0] ? subscriptions[0]["planId"] : "",
       planName: subscriptions[0] ? subscriptions[0]["planName"] : "",

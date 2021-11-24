@@ -5,7 +5,9 @@ export interface IApplication extends Document{
     did: string;
     owner: string;
     schemaId: string;
-    serviceEp: string;
+    baseUrl: string;
+    authResourcePath: string;
+    verifyResourcePath: string;
     authCounts: number;
 }
 
@@ -14,7 +16,9 @@ const ApplicationSchema =  new Schema({
     did: { type: String, required: true, unique: true },
     owner: { type: String, required: true },
     schemaId: { type: String, required: true },
-    serviceEp: { type: String, required: true },
+    baseUrl: { type: String, required: true },
+    authResourcePath: { type: String, required: true },
+    verifyResourcePath: { type: String, required: false },
     authCounts: { type: Number, required: true }
 })
 

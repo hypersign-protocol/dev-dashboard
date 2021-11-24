@@ -18,7 +18,8 @@ export = (hypersign) => {
         try {
             const subscription = req.body;
             if (!subscription || !subscription.planId) throw new Error('PlanId is not passed');
-            subscription.subscriber = req.body.userData.id;
+            const userData = req.body.hypersign.data;
+            subscription.subscriber = userData.id;
             const subsObject = new Subscription({ ...subscription });
             const newSubscription = await subsObject.create();
             res.status(200).send({ status: 200, message: newSubscription, error: null });
@@ -29,9 +30,10 @@ export = (hypersign) => {
     })
 
     router.get('/', hypersign.authorize.bind(hypersign), async (req, res) => {
+        const userData = req.body.hypersign.data;
         const pricing = new Subscription({});
         const subscriptions = await pricing.fetch({
-            subscriber: req.body.userData.id
+            subscriber: userData.id
         });        
         res.status(200).send({ status: 200, message: subscriptions, error: null });
     })

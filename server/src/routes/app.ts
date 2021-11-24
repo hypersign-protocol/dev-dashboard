@@ -8,7 +8,7 @@ export = (hypersign) => {
 
     router.get('/', hypersign.authorize.bind(hypersign), async (req, res) => {
         try {
-            const { userData } = req.body;
+            const userData  = req.body.hypersign.data;
             const app = new Application({});
             const appList = await app.fetch({
                 owner: userData.id
@@ -22,9 +22,10 @@ export = (hypersign) => {
     router.post('/create', hypersign.authorize.bind(hypersign), validateUserSubscription, async (req, res) => {    
     // router.post('/create',  hypersign.authorize.bind(hypersign), async (req, res) => {    
         try {
-            const { userData, basic, advance } = req.body;
+            const userData  = req.body.hypersign.data;
+            const { basic, advance, jwt, rft  } = req.body;
             console.log("Before calling generateHypersignJson")
-            const { hypersignJSON, app } = await generateHypersignJson(basic, advance, userData ? userData["id"]: basic.did ); 
+            const { hypersignJSON, app } = await generateHypersignJson(basic, advance, jwt, rft, userData ? userData["id"]: basic.did ); 
             console.log("After calling generateHypersignJson")
             // step3: Generate hypersign.json data and return
             res.status(200).send({ status: 200, message: { hypersignJSON, newApp: app }, error: null });

@@ -7,7 +7,7 @@
   margin: 1em;
 }
 .slidein {
-  min-width: 600px;
+  min-width: 700px;
   position: fixed;
   z-index: 100;
   top: 0;
@@ -63,6 +63,10 @@
   background: aliceblue;
   padding: 0px;
 }
+.subtitle{
+  font-size: small;
+  color: gray;
+}
 
 .card {
   border-radius: 10px;
@@ -99,12 +103,25 @@
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
+.create-app-slider-body {
+text-align: left; height: 100%; font-size: medium; overflow-y: scroll
+}
 img {
   border-radius: 5px 5px 0 0;
 }
 
 .container {
   padding: 2px 16px;
+}
+
+.collapsible{
+  border-radius: inherit;
+                    text-align: left;
+                    border-style: hidden;
+}
+
+.collapsible-btn{
+padding-left: 0px
 }
 </style>
 <template>
@@ -129,43 +146,56 @@ img {
     </div>
     <transition name="slide">
       <div class="slidein" v-if="open">
-        <div class="card" style="text-align: left; min-height: 100%">
-          <div class="card-header" style="padding: 2%">
-            <!-- <b-button variant="link" style="float: left" @click="toggle"
-              >x</b-button
-            > -->
+        <div class="" style="height:90%">
+          <div class="card-header" style="padding: 2%; text-align:left">
             <a href="#" @click="toggle" style="float: left"><i class="fas fa-times"></i></a>
-            <label style="margin-left: 2%">Application Configurations</label>
+            <label style="margin-left: 2%; font-weight:bold">Create An Application</label>
           </div>
-          <div class="card-body">
+          
+          <div class="card-body create-app-slider-body">
             <Errors v-if="errors.length > 0" :errors="errors" />
             <div class="">
               <div class="row form-group">
                 <div class="col-md-4">
-                  <label>App Name:</label>
+                  <label>App Name: </label>
                 </div>
                 <div class="col-md-8">
                   <input
                     type="text"
                     v-model="basic.name"
                     size="35"
-                    placeholder="Enter app name"
+                    placeholder="Demo App"
                     class="form-control"
                   />
                 </div>
               </div>
               <div class="row form-group">
                 <div class="col-md-4">
-                  <label>Service Endpoint:</label>
+                  <label>Base URL:</label>
                 </div>
                 <div class="col-md-8">
                   <input
                     type="text"
                     v-model="basic.serviceEndpoint"
                     size="35"
-                    placeholder="Enter service endpoint"
+                    placeholder="https://host:port"
                     class="form-control"
                   />
+                </div>
+              </div>
+              <div class="row form-group">
+                <div class="col-md-4">
+                  <label>Auth Resource:</label>
+                </div>
+                <div class="col-md-8">
+                  <input
+                    type="text"
+                    v-model="basic.authResourcePath"
+                    size="35"
+                    placeholder="/api/v1/auth/login"
+                    class="form-control"
+                  />
+                  <span class="subtitle" v-if="authUri">Auth URI: <a :href="authUri" target="_blank" style="color: inherit;">{{ authUri }}</a></span>
                 </div>
               </div>
               <!-- <div class="row form-group">
@@ -182,18 +212,109 @@ img {
                   />
                 </div>
               </div> -->
+              
               <div class="row form-group">
                 <div
-                  class="col-md-12"
-                  style="
-                    border-radius: inherit;
-                    text-align: left;
-                    border-style: hidden;
-                  "
+                  class="col-md-12 collapsible"
                 >
                   <div class="">
                     <b-button
-                      style="padding-left: 0px"
+                      class="collapsible-btn"
+                      v-b-toggle.collapse-3
+                      variant="link"
+                      >JWT Configurations</b-button
+                    >
+                  </div>
+                  <b-collapse id="collapse-3">
+                    <div class="card-body">                      
+                      <div class="separator form-group">
+                        Authorization Token Setting
+                      </div>
+                      
+                      <div class="row form-group">
+                        <div class="col-md-4">
+                          <label>JWT Secret:</label>
+                        </div>
+                        <div class="col-md-7">
+                          <input
+                            type="text"
+                            v-model="jwt.secret"
+                            size="35"
+                            placeholder="************************************"
+                            class="form-control"
+                          /> 
+                        </div>
+                         <div class="col-md-1"  style="align-content: center;display: inline-grid;">
+                           <i class="fas fa-sync-alt"  @click="generateNewSecret('JWT')"  title="Generate a new secret" style="margin-top:0; margin-bottom:0; cursor:pointer"></i>
+                         </div>
+                      </div>
+
+                      <div class="row form-group">
+                        <div class="col-md-4">
+                          <label>Expiry Time (ms):</label>
+                        </div>
+                        <div class="col-md-8">
+                          <input
+                            type="number"
+                            v-model="jwt.expiryTime"
+                            size="35"
+                            placeholder="enter values in milliseconds"
+                            class="form-control"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="separator form-group">
+                        Refresh Token Setting
+                      </div>
+                      
+                      <div class="row form-group">
+                        <div class="col-md-4">
+                          <label>JWT Secret:</label>
+                        </div>
+                        <div class="col-md-7">
+                          <input
+                            type="text"
+                            v-model="rft.secret"
+                            size="35"
+                            placeholder="************************************"
+                            class="form-control"
+                          />
+                        </div>
+                        <div class="col-md-1"  style="align-content: center;display: inline-grid;">
+                           <i class="fas fa-sync-alt"  @click="generateNewSecret('RFT')" title="Generate a new secret" style="margin-top:0; margin-bottom:0; cursor:pointer"></i>
+                         </div>
+                      </div>
+
+                      <div class="row form-group">
+                        <div class="col-md-4">
+                          <label>Expiry Time (ms):</label>
+                        </div>
+                        <div class="col-md-8">
+                          <input
+                            type="number"
+                            v-model="rft.expiryTime"
+                            size="35"
+                            placeholder="enter values in milliseconds"
+                            class="form-control"
+                          />
+                        </div>
+                      </div>
+                      
+                    </div>
+                  </b-collapse>
+                </div>
+              </div>
+
+
+              <!-- Advance Config --> 
+              <div class="row form-group">
+                <div
+                  class="col-md-12"
+                >
+                  <div class="">
+                    <b-button
+                      class="collapsible-btn"
                       v-b-toggle.collapse-2
                       variant="link"
                       >Advance Configurations (optional)</b-button
@@ -203,7 +324,7 @@ img {
                     <div class="card-body">
                       <div class="row form-group">
                         <div class="col-md-4">
-                          <label style="">Schema:</label>
+                          <label style="">Custom Schema:</label>
                         </div>
                         <div class="col-md-8">
                           <b-form-select
@@ -215,8 +336,25 @@ img {
                           ></b-form-select>
                         </div>
                       </div>
+
+                      <div class="row form-group">
+                        <div class="col-md-4">
+                          <label>Verify Resource:</label>
+                        </div>
+                        <div class="col-md-8">
+                          <input
+                            type="text"
+                            v-model="advance.verifyResourcePath"
+                            size="35"
+                            placeholder="/api/v1/auth/verify"
+                            class="form-control"
+                          />
+                          <span class="subtitle" v-if="authUri">Verify URI: <a :href="credentialUri" target="_blank" style="color: inherit;">{{ credentialUri }}</a></span>
+                        </div>
+                      </div>
+                      
                       <div class="separator form-group">
-                        E-mail configuration
+                        E-mail Setting
                       </div>
                       <div class="row form-group">
                         <div class="col-md-4">
@@ -227,7 +365,7 @@ img {
                             type="text"
                             v-model="advance.mail.host"
                             size="35"
-                            placeholder="Enter host name"
+                            placeholder="smtp.gmail.com"
                             class="form-control"
                           />
                         </div>
@@ -241,7 +379,7 @@ img {
                             type="text"
                             v-model="advance.mail.port"
                             size="35"
-                            placeholder="Enter mail port"
+                            placeholder="465"
                             class="form-control"
                           />
                         </div>
@@ -255,7 +393,7 @@ img {
                             type="text"
                             v-model="advance.mail.user"
                             size="35"
-                            placeholder="Enter mail user"
+                            placeholder="demoUser"
                             class="form-control"
                           />
                         </div>
@@ -269,7 +407,7 @@ img {
                             type="password"
                             v-model="advance.mail.pass"
                             size="35"
-                            placeholder="Enter mail password"
+                            placeholder="********"
                             class="form-control"
                           />
                         </div>
@@ -279,6 +417,8 @@ img {
                 </div>
               </div>
 
+
+              
               <div class="row form-group">
                 <div class="col-md-12">
                   <button
@@ -291,6 +431,7 @@ img {
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </transition>
@@ -374,39 +515,15 @@ img {
                         ></label
                       >
                     </li>
-                    <li v-if="app.serviceEp">
+                    <li v-if="app.baseUrl">
                       <label>SERVICE ENDPOINT</label>
                     </li>
-                    <li v-if="app.serviceEp">
+                    <li v-if="app.baseUrl">
                       <label
-                        ><a href="#">{{ app.serviceEp }}</a></label
+                        ><a href="#">{{ app.baseUrl }}</a></label
                       >
                     </li>
                   </ul>
-
-                  <!-- <p style="font-size: small; color: gray">
-                  <a
-                    v-bind:href="
-                      'https://ssi.hypermine.in/core/api/did/resolve/' + app.did
-                    "
-                    target="_blank"
-                    >{{ app.did }}</a
-                  >
-                </p>
-                <p v-if="app.schemaId">
-                  <label>Schema:</label>
-                  <a
-                    v-bind:href="
-                      'https://ssi.hypermine.in/core/api/schema/get/' +
-                      app.schemaId
-                    "
-                    target="_blank"
-                    >{{ app.schemaId }}</a
-                  >
-                </p>
-                <p v-if="app.serviceEp">
-                  Service Ep: <a href="#">{{ app.serviceEp }}</a>
-                </p> -->
                 </div>
 
                 
@@ -432,6 +549,7 @@ import Errors from "@/components/Errors.vue";
 import Loading from "vue-loading-overlay";
 import { specialCharCheck } from "../utils/utility";
 import { isWebUri } from "valid-url";
+import { uuid } from 'uuidv4';
 export default {
   name: "CreateApplication",
   components: { Info, Loading, Errors },
@@ -456,18 +574,37 @@ export default {
       basic: {
         name: "",
         serviceEndpoint: "",
+        authResourcePath: ""
+
       },
       advance: {
         schemaId: "",
+        verifyResourcePath: "",
         mail: {
           host: "",
-          port: 0,
+          port: "",
           user: "",
           pass: "",
         },
       },
+      jwt: {
+        secret: uuid(),
+        expiryTime: 900000
+      },
+      rft: {
+        secret: uuid(),
+        expiryTime: 86400000
+      },
       hypersignJson: {},
     };
+  },
+  computed: {
+    authUri(){
+      return this.basic.serviceEndpoint + this.basic.authResourcePath
+    },
+    credentialUri(){
+      return this.basic.serviceEndpoint + this.advance.verifyResourcePath
+    }
   },
   created() {
     const usrStr = localStorage.getItem("user");
@@ -481,6 +618,14 @@ export default {
     });
   },
   methods: {
+    generateNewSecret(type){
+      if(type === "JWT"){
+        this.jwt.secret = uuid();
+      } else if(type === "RFT"){
+        this.rft.secret = uuid();
+      }
+    },
+
     notifySuccess(msg) {
       this.$notify({
         group: "foo",
@@ -578,9 +723,9 @@ export default {
     },
     fieldValidations() {
       this.errors = [];
-      if (this.basic.name == "") this.errors.push("AppName can not be empty");
+      if (this.basic.name == "") this.errors.push("App Name can not be empty");
       if (this.basic.serviceEndpoint == "")
-        this.errors.push("Service Endpoint Url can not be empty");
+        this.errors.push("Base Url can not be empty");
 
       if (this.basic.name != "" && specialCharCheck(this.basic.name))
         this.errors.push("AppName can not contain special character");
@@ -589,7 +734,20 @@ export default {
         this.basic.serviceEndpoint != "" &&
         !isWebUri(this.basic.serviceEndpoint)
       ) {
-        this.errors.push("Invalid service endpoint url");
+        this.errors.push("Invalid Base Url");
+      }
+
+
+      if (this.basic.authResourcePath == ""){
+        this.errors.push("Authentication resource path can not be empty");
+      }
+
+      if (this.jwt.secret == "" || this.rft.secret == ""){
+        this.errors.push("JWT secret can not be empty");
+      }
+
+      if (this.jwt.expiryTime == "" || this.rft.expiryTime == ""){
+        this.errors.push("Expiry time can not be empty");
       }
 
       // if (this.basic.logoUrl != "" && !isWebUri(this.basic.logoUrl))
@@ -615,12 +773,17 @@ export default {
           const data = {
             basic: {},
             advance: {},
+            jwt: {},
+            rft: {}
           };
 
 
           Object.assign(data.basic, this.basic);
-
+          Object.assign(data.jwt, this.jwt);
+          Object.assign(data.jwt, this.rft);
+          
           data.advance.schemaId = this.selected ? this.selected : "";
+          data.advance.verifyResourcePath = this.advance.verifyResourcePath;
           const resp = await fetch(createAppUrl, {
             method: "POST",
             body: JSON.stringify(data),
