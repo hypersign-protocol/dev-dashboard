@@ -5,7 +5,7 @@ import SubscriptionModel, { ISubscription } from '../models/subscription'
 export async function validateUserSubscription(req, res, next) {
     try {
         const userData  = req.body.hypersign.data;
-        const userDid = userData.id;
+        const userDid = userData.email;
     
         const subscriptions:Array<ISubscription> = await SubscriptionModel.where({subscriber: userDid}).find({});
 
@@ -31,7 +31,7 @@ export async function validateUserSubscription(req, res, next) {
 export async function validateSchemaCreation(req, res, next) {
     try {
         const userData  = req.body.hypersign.data;
-        const userDid = userData.id;
+        const userDid = userData.email;
         const pricing = new Subscription({});
         const subscriptions = await pricing.fetch({
             subscriber: userDid

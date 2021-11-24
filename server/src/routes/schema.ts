@@ -12,7 +12,7 @@ export = (hypersign) => {
         try {
             const userData  = req.body.hypersign.data;
             const r = await registerSchema1({
-                author: userData.id,
+                author: userData.email,
                 ...req.body
             })
             
@@ -27,7 +27,7 @@ export = (hypersign) => {
     router.get('/get', hypersign.authorize.bind(hypersign), async (req, res) => {
         try {
             const userData  = req.body.hypersign.data;
-            const schemaList = await hypersignSDK.schema.getSchema({author: userData.id});
+            const schemaList = await hypersignSDK.schema.getSchema({author: userData.email});
             res.status(200).send({ status: 200, message: schemaList, error: null });
         } catch (e) {
             res.status(500).send({ status: 500, message: null, error: e.message });

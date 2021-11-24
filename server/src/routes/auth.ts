@@ -25,11 +25,11 @@ export = (hypersign) => {
             const user = req.body.hypersign.data;
             const pricing = new Subscription({});
             const subscriptions = await pricing.fetch({
-                subscriber: user.id
+                subscriber: user.email
             });
             const app = new Application({});
             const appList = await app.fetch({
-                owner: user.id
+                owner: user.email
             });
 
             if(subscriptions.length > 0){
